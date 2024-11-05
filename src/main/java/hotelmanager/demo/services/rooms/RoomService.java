@@ -56,6 +56,7 @@ public class RoomService {
         room.setRoomType(roomType);
         room.setDescription(roomDto.getDescription());
         room.setFloor(roomDto.getFloor());
+        room.setSize(roomDto.getSize());
         room.setHasBalcony(roomDto.getHasBalcony());
         room.setIsAvailable(roomDto.getIsAvailable());
         room.setIsSmokingAllowed(roomDto.getIsSmokingAllowed());
