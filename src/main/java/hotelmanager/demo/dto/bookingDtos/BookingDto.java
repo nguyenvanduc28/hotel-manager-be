@@ -27,4 +27,6 @@ public class BookingDto extends BaseDto {
     private Integer numberOfChildren;
     private Boolean isGuaranteed;
     private List<RoomDto> rooms;
+    private List<BookingConsumableDto> consumablesUsed;
+    private List<BookingEquipmentDamagedDto> equipmentDamagedList;
 }

@@ -55,5 +55,18 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     @Query(value = "UPDATE bookings SET check_in_time = :checkInTime WHERE id = :bookingId", nativeQuery = true)
     void checkin(@Param("bookingId") int bookingId, @Param("checkInTime") Long checkInTime);
 
+//    @Query(value = """
+//        SELECT b.*, c.name AS customer_name, c.phone AS customer_phone, c.email AS customer_email,
+//               c.address AS customer_address, c.id_card AS customer_id_card
+//        FROM bookings b
+//        LEFT JOIN customers c ON b.customer_id = c.id
+//        LEFT JOIN booking_rooms br ON b.id = br.booking_id
+//        LEFT JOIN rooms r ON br.room_id = r.id
+//        WHERE b.id = :bookingId
+//        """, nativeQuery = true)
+//    Booking findBookingById(@Param("bookingId") Integer bookingId);
+    @Modifying
+    @Query("UPDATE Booking b SET b.checkOutTime = :checkOutTime WHERE b.id = :bookingId")
+    void checkout(@Param("bookingId") Integer bookingId, @Param("checkOutTime") Long checkOutTime);
 
 }

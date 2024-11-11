@@ -11,7 +11,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class EquipmentDto extends BaseDto {
-
     private String name;
 
     private EquipmentCategoryDto equipmentCategory;

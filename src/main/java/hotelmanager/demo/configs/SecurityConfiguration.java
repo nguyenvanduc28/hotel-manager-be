@@ -41,7 +41,8 @@ public class SecurityConfiguration {
                                 .requestMatchers(HttpMethod.POST, "/admin/rooms/consumable-list").hasAnyAuthority(RoleType.ADMIN.name())
                                 .requestMatchers(HttpMethod.PUT, "/admin/rooms/consumable").hasAnyAuthority(RoleType.ADMIN.name())
                         .requestMatchers(HttpMethod.GET, "/admin/rooms/consumable/{id}").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
-
+                        .requestMatchers(HttpMethod.GET, "/admin/rooms/consumable/room/{roomId}").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
+                        
                         .requestMatchers(HttpMethod.GET, "/admin/rooms/equipment-category").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
                         .requestMatchers(HttpMethod.POST, "/admin/rooms/equipment-category").hasAnyAuthority(RoleType.ADMIN.name())
 
@@ -50,6 +51,7 @@ public class SecurityConfiguration {
                                 .requestMatchers(HttpMethod.POST, "/admin/rooms/equipment-list").hasAnyAuthority(RoleType.ADMIN.name())
                                 .requestMatchers(HttpMethod.PUT, "/admin/rooms/equipment").hasAnyAuthority(RoleType.ADMIN.name())
                         .requestMatchers(HttpMethod.GET, "/admin/rooms/equipment/{id}").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
+                        .requestMatchers(HttpMethod.GET, "/admin/rooms/equipment/room/{roomId}").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
 
                         .requestMatchers(HttpMethod.GET, "/admin/rooms/roomtype").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
                         .requestMatchers(HttpMethod.POST, "/admin/rooms/roomtype").hasAnyAuthority(RoleType.ADMIN.name())
@@ -64,13 +66,18 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/admin/customers/search").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
                         .requestMatchers(HttpMethod.POST, "/admin/customers/create").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
 
-                        .requestMatchers(HttpMethod.GET, "admin/bookings/getall").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
+                                .requestMatchers(HttpMethod.GET, "admin/bookings/getall").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
+                                .requestMatchers(HttpMethod.GET, "admin/bookings/{id}").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
                         .requestMatchers(HttpMethod.GET, "admin/bookings/search-cusname").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
                         .requestMatchers(HttpMethod.GET, "admin/bookings/search").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
                                 .requestMatchers(HttpMethod.POST, "admin/bookings/create").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
                                 .requestMatchers(HttpMethod.POST, "admin/bookings/confirm/{id}").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
                                 .requestMatchers(HttpMethod.POST, "admin/bookings/checkin/{id}").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
-
+                                .requestMatchers(HttpMethod.POST, "admin/bookings/{bookingId}/consumables").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
+                                .requestMatchers(HttpMethod.POST, "admin/bookings/{bookingId}/consumable").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
+                                .requestMatchers(HttpMethod.POST, "admin/bookings/{bookingId}/equipment-damaged").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
+                                .requestMatchers(HttpMethod.POST, "admin/bookings/{bookingId}/equipment-damaged/single").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
+                                .requestMatchers(HttpMethod.POST, "admin/bookings/{bookingId}/checkout").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)

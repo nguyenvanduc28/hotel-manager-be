@@ -136,6 +136,25 @@ public class EquipmentService {
         return equipmentDtos1;
     }
 
+    @Transactional(readOnly = true) 
+    public List<EquipmentDto> getAllEquipmentByRoomId(Integer roomId) {
+        List<IEquipmentDto> equipments = equipmentRepository.findAllEquipmentByRoomId(roomId);
+        List<EquipmentDto> equipmentDtos1 = new ArrayList<>();
+        for (IEquipmentDto iEquipmentDto : equipments) {
+            EquipmentDto equipmentDto = modelMapper.map(iEquipmentDto, EquipmentDto.class);
+            if (iEquipmentDto.getRoomId() != null) {
+                RoomDto roomDto = modelMapper.map(roomRepository.findRoomById(iEquipmentDto.getRoomId()), RoomDto.class);
+                equipmentDto.setRoom(roomDto);
+            }
+            if (iEquipmentDto.getEquipmentCategoryId() != null) {
+                EquipmentCategoryDto equipmentCategoryDto = modelMapper.map(equipmentCategoryRepository.findCategoryById(iEquipmentDto.getEquipmentCategoryId()), EquipmentCategoryDto.class);
+                equipmentDto.setEquipmentCategory(equipmentCategoryDto);
+            }
+            equipmentDtos1.add(equipmentDto);
+        }
+        return equipmentDtos1;
+    }
+
     @Transactional(readOnly = true)
     public EquipmentDto getEquipmentById(Integer id) {
         IEquipmentDto iequipment = equipmentRepository.findEquipmentById(id);

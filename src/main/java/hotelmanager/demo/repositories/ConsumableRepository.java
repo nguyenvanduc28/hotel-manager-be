@@ -43,6 +43,14 @@ public interface ConsumableRepository extends JpaRepository<Consumable, Integer>
             "       c.price AS price, c.quantity AS quantity, c.unit AS unit, \n" +
             "       c.expiry_date AS expiryDate, c.barcode AS barcode, \n" +
             "       c.description AS description\n" +
+            "FROM consumables c WHERE c.room_id =:roomId\n", nativeQuery = true)
+    List<IConsumableDto> findAllConsumablesByRoomId(@Param("roomId") Integer roomId);
+
+    @Query(value = "SELECT c.id AS id, c.name AS name, c.room_id AS roomId, \n" +
+            "       c.consumable_category_id AS consumableCategoryId, \n" +
+            "       c.price AS price, c.quantity AS quantity, c.unit AS unit, \n" +
+            "       c.expiry_date AS expiryDate, c.barcode AS barcode, \n" +
+            "       c.description AS description\n" +
             "FROM consumables c  WHERE c.id =:id\n", nativeQuery = true)
     IConsumableDto findConsumableById(@Param("id") Integer id);
 
@@ -50,5 +58,11 @@ public interface ConsumableRepository extends JpaRepository<Consumable, Integer>
     @Modifying
     @Query(value = "UPDATE consumables SET room_id = :roomId WHERE id = :consumableId", nativeQuery = true)
     void updateRoomId(@Param("consumableId") int consumableId, @Param("roomId") Integer roomId);
+
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE consumables SET quantity = :quantity WHERE id = :consumableId", nativeQuery = true)
+    void updateQuantity(@Param("consumableId") int consumableId, @Param("quantity") Integer quantity);
+
 
 }

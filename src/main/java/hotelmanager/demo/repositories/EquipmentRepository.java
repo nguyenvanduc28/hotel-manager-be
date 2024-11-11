@@ -38,6 +38,13 @@ public interface EquipmentRepository extends JpaRepository<Equipment, Integer> {
             "       e.equipment_category_id AS equipmentCategoryId, \n" +
             "       e.installation_date AS installationDate, e.barcode AS barcode, \n" +
             "       e.status AS status, e.description AS description\n" +
+            "FROM equipment e WHERE e.room_id = :roomId\n", nativeQuery = true)
+    List<IEquipmentDto> findAllEquipmentByRoomId(@Param("roomId") Integer roomId);
+
+    @Query(value = "SELECT e.id AS id, e.name AS name, e.room_id AS roomId, \n" +
+            "       e.equipment_category_id AS equipmentCategoryId, \n" +
+            "       e.installation_date AS installationDate, e.barcode AS barcode, \n" +
+            "       e.status AS status, e.description AS description\n" +
             "FROM equipment e WHERE e.id =:id\n", nativeQuery = true)
     IEquipmentDto findEquipmentById(@Param("id") Integer id);
 
@@ -45,5 +52,10 @@ public interface EquipmentRepository extends JpaRepository<Equipment, Integer> {
     @Modifying
     @Query(value = "UPDATE equipment SET room_id = :roomId WHERE id = :equipmentId", nativeQuery = true)
     void updateRoomId(@Param("equipmentId") int equipmentId, @Param("roomId") Integer roomId);
+
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE equipment SET status = :status WHERE id = :equipmentId", nativeQuery = true)
+    void updateStatus(@Param("equipmentId") int equipmentId, @Param("status") String status);
 
 }

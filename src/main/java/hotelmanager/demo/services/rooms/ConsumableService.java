@@ -153,6 +153,26 @@ public class ConsumableService {
     }
 
     @Transactional(readOnly = true)
+    public List<ConsumableDto> getAllConsumablesByRoomId(Integer roomId) {
+        List<IConsumableDto> consumableDtos = consumableRepository.findAllConsumablesByRoomId(roomId);
+        List<ConsumableDto> consumableDtos2 = new ArrayList<>();
+        for (IConsumableDto iConsumableDto:consumableDtos) {
+            ConsumableDto consumableDto = modelMapper.map(iConsumableDto, ConsumableDto.class);
+            if (iConsumableDto.getRoomId() != null) {
+                RoomDto roomDto = modelMapper.map(roomRepository.findRoomById(iConsumableDto.getRoomId()), RoomDto.class);
+                consumableDto.setRoom(roomDto);
+            }
+            if (iConsumableDto.getConsumableCategoryId() != null) {
+                ConsumableCategoryDto categoryDto = modelMapper.map(consumableCategoryRepository.findCategoryById(iConsumableDto.getConsumableCategoryId()), ConsumableCategoryDto.class);
+                consumableDto.setConsumableCategory(categoryDto);
+            }
+            consumableDtos2.add(consumableDto);
+        }
+        return consumableDtos2;
+    }
+
+
+    @Transactional(readOnly = true)
     public ConsumableDto getConsumableById(Integer id) {
         IConsumableDto iConsumableDto = consumableRepository.findConsumableById(id);
         ConsumableDto consumableDtos2 = modelMapper.map(iConsumableDto, ConsumableDto.class);

@@ -115,6 +115,26 @@ public class RoomController {
                 .build());
     }
 
+    @GetMapping("consumable/room/{roomId}")
+    public ResponseEntity<ResponseObject> getAllConsumablesByRoomId(@PathVariable Integer roomId) {
+        List<ConsumableDto> consumables = consumableService.getAllConsumablesByRoomId(roomId);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .data(consumables)
+                .message("Fetched all consumables by room id")
+                .responseCode(HttpStatus.OK.value())
+                .build());
+    }
+
+    @GetMapping("equipment/room/{roomId}")
+    public ResponseEntity<ResponseObject> getAllEquipmentByRoomId(@PathVariable Integer roomId) {
+        List<EquipmentDto> equipments = equipmentService.getAllEquipmentByRoomId(roomId);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .data(equipments)
+                .message("Fetched all equipment by room id")
+                .responseCode(HttpStatus.OK.value())
+                .build());
+    }
+
     @PostMapping("equipment-category")
     public ResponseEntity<ResponseObject> createEquipmentCatrgory(
             @RequestBody @Valid EquipmentCategoryDto equipmentCategoryDto
