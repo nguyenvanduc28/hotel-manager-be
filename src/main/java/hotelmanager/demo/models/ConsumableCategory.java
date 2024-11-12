@@ -17,7 +17,6 @@ import java.util.List;
 public class ConsumableCategory extends BaseEntity{
 
     @NonNull
-    @NotEmpty
     private String name;
     private String description;
 

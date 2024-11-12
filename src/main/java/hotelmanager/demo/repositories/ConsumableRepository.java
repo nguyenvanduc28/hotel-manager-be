@@ -64,5 +64,5 @@ public interface ConsumableRepository extends JpaRepository<Consumable, Integer>
     @Query(value = "UPDATE consumables SET quantity = :quantity WHERE id = :consumableId", nativeQuery = true)
     void updateQuantity(@Param("consumableId") int consumableId, @Param("quantity") Integer quantity);
 
-
+    
 }

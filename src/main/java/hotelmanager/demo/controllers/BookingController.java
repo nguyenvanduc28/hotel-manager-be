@@ -165,4 +165,24 @@ public class BookingController {
                 .build()
         );
     }
+
+    @PostMapping("/{bookingId}/unconfirm")
+    public ResponseEntity<ResponseObject> unconfirmBooking(@PathVariable Integer bookingId) {
+        bookingService.unConfirm(bookingId);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .data(null)
+                .message("Unconfirmed booking successfully")
+                .responseCode(HttpStatus.OK.value())
+                .build());
+    }
+
+    @PostMapping("/{bookingId}/uncheckin")
+    public ResponseEntity<ResponseObject> uncheckInBooking(@PathVariable Integer bookingId) {
+        bookingService.unCheckin(bookingId);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .data(null)
+                .message("Unchecked-in booking successfully")
+                .responseCode(HttpStatus.OK.value())
+                .build());
+    }
 }

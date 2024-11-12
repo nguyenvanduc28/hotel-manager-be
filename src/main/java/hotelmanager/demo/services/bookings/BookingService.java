@@ -1,9 +1,7 @@
 package hotelmanager.demo.services.bookings;
 
 import hotelmanager.demo.dto.bookingDtos.*;
-import hotelmanager.demo.dto.roomDtos.IConsumableDto;
-import hotelmanager.demo.dto.roomDtos.IEquipmentDto;
-import hotelmanager.demo.dto.roomDtos.RoomDto;
+import hotelmanager.demo.dto.roomDtos.*;
 import hotelmanager.demo.exceptions.NotFoundException;
 import hotelmanager.demo.models.*;
 import hotelmanager.demo.models.enums.BookingStatus;
@@ -33,6 +31,12 @@ public class BookingService {
     @Autowired
     private RoomRepository roomRepository;
     @Autowired
+    private RoomTypeRepository roomTypeRepository;
+    @Autowired
+    private ConsumableCategoryRepository consumableCategoryRepository;
+    @Autowired
+    private EquipmentCategoryRepository equipmentCategoryRepository;
+    @Autowired
     private BookingConsumableRepository bookingConsumableRepository;
     @Autowired
     private BookingEquipmentDamagedRepository bookingEquipmentDamagedRepository;
@@ -54,17 +58,63 @@ public class BookingService {
     }
 
     private void enrichBookingDto(BookingDto bookingDto) {
+        // Get rooms
+        List<IRoomDto> roomDtos = bookingRepository.findAllRoomsByBookingId(bookingDto.getId());
+        List<RoomDto> mappedRooms = roomDtos.stream()
+            .map(roomDto -> {
+                RoomDto mappedRoom = modelMapper.map(roomDto, RoomDto.class);
+                RoomType roomType = roomTypeRepository.findById(mappedRoom.getRoomType().getId())
+                    .orElseThrow(() -> new NotFoundException("Room type not found"));
+                mappedRoom.setRoomType(modelMapper.map(roomType, RoomTypeDto.class));
+                return mappedRoom;
+            })
+            .toList();
+        bookingDto.setRooms(mappedRooms);
+
         // Get consumables used
         List<IBookingConsumableDto> consumables = bookingConsumableRepository.findByBookingId(bookingDto.getId());
-        bookingDto.setConsumablesUsed(List.of(modelMapper.map(consumables, BookingConsumableDto[].class)));
+        List<BookingConsumableDto> consumableDtos = new ArrayList<>();
+        for (IBookingConsumableDto consumable : consumables) {
+            BookingConsumableDto consumableDto = modelMapper.map(consumable, BookingConsumableDto.class);
+            
+            // Get category for each consumable
+            IConsumableDto consumableInfo = consumableRepository.findConsumableById(consumable.getConsumableId());
+            if (consumableInfo != null && consumableInfo.getConsumableCategoryId() != null) {
+                IConsumableCategoryDto categoryDto = consumableCategoryRepository.findCategoryById(consumableInfo.getConsumableCategoryId());
+                if (categoryDto != null) {
+                    consumableDto.setConsumableCategory(modelMapper.map(categoryDto, ConsumableCategoryDto.class));
+                }
+            }
+            
+            consumableDtos.add(consumableDto);
+        }
+        
+        bookingDto.setConsumablesUsed(consumableDtos);
 
         // Get damaged equipment
         List<IBookingEquipmentDamagedDto> damagedEquipment = bookingEquipmentDamagedRepository.findByBookingId(bookingDto.getId());
-        bookingDto.setEquipmentDamagedList(List.of(modelMapper.map(damagedEquipment, BookingEquipmentDamagedDto[].class)));
+        List<BookingEquipmentDamagedDto> damagedDtos = new ArrayList<>();
+        
+        for (IBookingEquipmentDamagedDto damaged : damagedEquipment) {
+            BookingEquipmentDamagedDto damagedDto = modelMapper.map(damaged, BookingEquipmentDamagedDto.class);
+            
+            // Get category for each equipment
+            IEquipmentDto equipmentInfo = equipmentRepository.findEquipmentById(damaged.getEquipmentId());
+            if (equipmentInfo != null && equipmentInfo.getEquipmentCategoryId() != null) {
+                IEquipmentCategoryDto category = equipmentCategoryRepository.findCategoryById(equipmentInfo.getEquipmentCategoryId());
+                if (category != null) {
+                    damagedDto.setEquipmentCategory(modelMapper.map(category, EquipmentCategoryDto.class));
+                }
+            }
+            
+            damagedDtos.add(damagedDto);
+        }
+        
+        bookingDto.setEquipmentDamagedList(damagedDtos);
     }
 
     public List<BookingDto> getSortedBookings() {
-        List<Booking> bookings = bookingRepository.findAllBookingsSortedByStatusAndDate();
+        List<IBookingDto> bookings = bookingRepository.findAllBookingsSortedByStatusAndDate();
         List<BookingDto> bookingDtos = List.of(modelMapper.map(bookings, BookingDto[].class));
         bookingDtos.forEach(this::enrichBookingDto);
         return bookingDtos;
@@ -140,9 +190,12 @@ public class BookingService {
         return bookingDto1;
     }
 
+    @Transactional
     public void confirmBooking(Integer bookingId) {
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException("Không tìm thấy booking"));
         bookingRepository.updateStatusBooking(bookingId, BookingStatus.CONFIRMED);
+        Long confirmTime = Instant.now().getEpochSecond();
+        bookingRepository.confirm(bookingId, confirmTime);
     }
     @Transactional
     public void checkinBooking(Integer bookingId) {
@@ -241,44 +294,106 @@ public class BookingService {
     public BookingDto checkout(Integer bookingId, BookingDto bookingDto) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Không tìm thấy booking"));
+        boolean isUpdate = booking.getStatus().equals(BookingStatus.AWAITING_PAYMENT);
 
-        //add consumables used
+        // Nếu là cập nhật, xóa dữ liệu cũ trước
+        if (isUpdate) {
+            // Xóa consumables cũ
+            List<IBookingConsumableDto> oldConsumables = bookingConsumableRepository.findByBookingId(bookingId);
+            for (IBookingConsumableDto oldConsumable : oldConsumables) {
+                // Hoàn trả số lượng về room
+                IConsumableDto consumableDto = consumableRepository.findConsumableById(oldConsumable.getConsumableId());
+                if (consumableDto != null) {
+                    int newQuantity = consumableDto.getQuantity() + oldConsumable.getQuantityUsed();
+                    consumableRepository.updateQuantity(consumableDto.getId(), newQuantity);
+                }
+            }
+            bookingConsumableRepository.deleteAllByBookingId(bookingId);
+
+            // Xóa equipment damaged cũ
+            List<IBookingEquipmentDamagedDto> oldDamaged = bookingEquipmentDamagedRepository.findByBookingId(bookingId);
+            for (IBookingEquipmentDamagedDto damaged : oldDamaged) {
+                // Reset status equipment về AVAILABLE
+                equipmentRepository.updateStatus(damaged.getEquipmentId(), EquipmentStatus.AVAILABLE.name());
+            }
+            bookingEquipmentDamagedRepository.deleteAllByBookingId(bookingId);
+        }
+
+        // Thêm consumables mới
         List<BookingConsumables> consumables = List.of(modelMapper.map(bookingDto.getConsumablesUsed(), BookingConsumables[].class));
         this.addBookingConsumables(bookingId, consumables);
 
-        //update consumables in room
-        for (BookingConsumableDto bookingConsumableDto:bookingDto.getConsumablesUsed()) {
+        // Cập nhật consumables trong room
+        for (BookingConsumableDto bookingConsumableDto : bookingDto.getConsumablesUsed()) {
             IConsumableDto consumableDto = consumableRepository.findConsumableById(bookingConsumableDto.getConsumableId());
-            if (consumableDto == null) throw new NotFoundException("Không tìm thấy consumable id:"+bookingConsumableDto.getConsumableId());
+            if (consumableDto == null) 
+                throw new NotFoundException("Không tìm thấy consumable id:" + bookingConsumableDto.getConsumableId());
             if (consumableDto.getQuantity() < bookingConsumableDto.getQuantityUsed())
                 throw new RuntimeException("Số lượng sử dụng phải nhỏ hơn hoặc bằng số lượng sẵn có");
+            
             int quantity_rest = consumableDto.getQuantity() - bookingConsumableDto.getQuantityUsed();
-
-//            if (quantity_rest == 0); // chỗ này thực hiện xóa khỏi room
             consumableRepository.updateQuantity(consumableDto.getId(), quantity_rest);
-            // cập nhật kho nữa
         }
 
-        //add equipment damaged
+        // Thêm equipment damaged mới
         List<BookingEquipmentDamaged> equipmentDamageds = List.of(modelMapper.map(bookingDto.getEquipmentDamagedList(), BookingEquipmentDamaged[].class));
         this.addBookingEquipmentDamaged(bookingId, equipmentDamageds);
-        // thực hiện cập nhật status của equipment trong room
-        for (BookingEquipmentDamagedDto bookingEquipmentDamagedDto:bookingDto.getEquipmentDamagedList()) {
+
+        // Cập nhật status của equipment trong room
+        for (BookingEquipmentDamagedDto bookingEquipmentDamagedDto : bookingDto.getEquipmentDamagedList()) {
             IEquipmentDto equipmentDto = equipmentRepository.findEquipmentById(bookingEquipmentDamagedDto.getEquipmentId());
-            if (equipmentDto == null) throw new NotFoundException("Không tìm thấy equipment id:"+bookingEquipmentDamagedDto.getEquipmentId());
+            if (equipmentDto == null) 
+                throw new NotFoundException("Không tìm thấy equipment id:" + bookingEquipmentDamagedDto.getEquipmentId());
             equipmentRepository.updateStatus(equipmentDto.getId(), EquipmentStatus.MAINTENANCE.name());
         }
 
-        //thực hiện lưu hóa đơn TODO
-
-        //update checkoutTime
-        Long checkOutTime = Instant.now().getEpochSecond();
-        bookingRepository.checkout(bookingId, checkOutTime);
-
-        //update status booking
-        bookingRepository.updateStatusBooking(bookingId, BookingStatus.CHECKED_OUT);
-
+        // Cập nhật thời gian checkout nếu là lần đầu checkout
+        if (!isUpdate) {
+            Long checkOutTime = Instant.now().getEpochSecond();
+            bookingRepository.checkout(bookingId, checkOutTime);
+            bookingRepository.updateStatusBooking(bookingId, BookingStatus.AWAITING_PAYMENT);
+        }
 
         return bookingDto;
+    }
+
+    @Transactional
+    public void unConfirm(Integer bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new NotFoundException("Không tìm thấy booking"));
+                
+        if (!booking.getStatus().equals(BookingStatus.CONFIRMED)) {
+            throw new RuntimeException("Booking phải ở trạng thái CONFIRMED");
+        }
+
+        Long currentTime = Instant.now().getEpochSecond();
+        Long confirmedTime = booking.getConfirmedTime();
+
+        if (confirmedTime == null || (currentTime - confirmedTime) > 600) { // 600 seconds = 10 minutes
+            throw new RuntimeException("Chỉ có thể hủy xác nhận trong vòng 10 phút sau khi xác nhận");
+        }
+
+        bookingRepository.updateStatusBooking(bookingId, BookingStatus.PENDING);
+        bookingRepository.confirm(bookingId, null);
+    }
+
+    @Transactional
+    public void unCheckin(Integer bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new NotFoundException("Không tìm thấy booking"));
+                
+        if (!booking.getStatus().equals(BookingStatus.CHECKED_IN)) {
+            throw new RuntimeException("Booking phải ở trạng thái CHECKED_IN");
+        }
+
+        Long currentTime = Instant.now().getEpochSecond();
+        Long checkedInTime = booking.getCheckInTime();
+        
+        if (checkedInTime == null || (currentTime - checkedInTime) > 600) { // 600 seconds = 10 minutes
+            throw new RuntimeException("Chỉ có thể hủy check-in trong vòng 10 phút sau khi check-in");
+        }
+
+        bookingRepository.updateStatusBooking(bookingId, BookingStatus.CONFIRMED);
+        bookingRepository.checkin(bookingId, null);
     }
 }

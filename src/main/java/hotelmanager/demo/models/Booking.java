@@ -25,6 +25,7 @@ public class Booking extends BaseEntity {
     private Long checkOutDate;
     private Long checkInTime;
     private Long checkOutTime;
+    private Long confirmedTime;
     private Long estimatedArrivalTime;
     private Long bookingDate;
     private Boolean isGroup;

@@ -3,9 +3,11 @@ package hotelmanager.demo.repositories;
 import hotelmanager.demo.dto.bookingDtos.IBookingEquipmentDamagedDto;
 import hotelmanager.demo.models.BookingEquipmentDamaged;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,4 +29,9 @@ public interface BookingEquipmentDamagedRepository extends JpaRepository<Booking
             WHERE bed.booking_id = :bookingId
             """, nativeQuery = true)
     List<IBookingEquipmentDamagedDto> findByBookingId(@Param("bookingId") Integer bookingId);
+
+    @Transactional
+    @Modifying
+    @Query(value = "DELETE FROM booking_equipment_damaged WHERE booking_id = :bookingId", nativeQuery = true)
+    void deleteAllByBookingId(@Param("bookingId") Integer bookingId);
 }

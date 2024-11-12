@@ -1,6 +1,7 @@
 package hotelmanager.demo.services.bookings;
 
 import hotelmanager.demo.dto.bookingDtos.CustomerDto;
+import hotelmanager.demo.exceptions.NotFoundException;
 import hotelmanager.demo.models.Customer;
 import hotelmanager.demo.repositories.CustomerRepository;
 import org.modelmapper.ModelMapper;
@@ -54,5 +55,12 @@ public class CustomerService {
         }
         List<Customer> customers = customerRepository.findByNameContainingIgnoreCase(name);
         return List.of(modelMapper.map(customers, CustomerDto[].class));
+    }
+
+    @Transactional(readOnly = true)
+    public CustomerDto getCustomerById(Integer id) {
+        Customer customer = customerRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException("Không tìm thấy khách hàng với ID: " + id));
+        return modelMapper.map(customer, CustomerDto.class);
     }
 }

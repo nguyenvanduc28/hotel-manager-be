@@ -15,12 +15,13 @@ public class BookingDto extends BaseDto {
     private Long checkInTime;
     private Long checkOutTime;
     private Long checkOutDate;
+    private Long confirmedTime;
     private Long estimatedArrivalTime;
     private Long bookingDate;
     private Boolean isGroup;
-    private Double totalCost;
+    private Double totalCost; //tiền đặt phòng
     private String status;
-    private Double deposit;
+    private Double deposit; //tiền cọc
     private String cancellationPolicy;
     private Long canceledAt;
     private Integer numberOfAdults;

@@ -11,8 +11,6 @@ import java.util.List;
 @Getter
 @Setter
 public class ConsumableCategoryDto extends BaseDto {
-    @NonNull
-    @NotEmpty
     private String name;
     private String description;
 }
