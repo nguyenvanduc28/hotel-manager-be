@@ -48,6 +48,16 @@ public class InvoiceController {
                 .build());
     }
 
+    @GetMapping("/booking/{bookingId}")
+    public ResponseEntity<ResponseObject> getInvoiceByBookingId(@PathVariable Integer bookingId) {
+        InvoiceDto invoice = invoiceService.getInvoiceByBookingId(bookingId);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .data(invoice)
+                .message("Fetched invoice with booking ID: " + bookingId)
+                .responseCode(HttpStatus.OK.value())
+                .build());
+    }
+
     @PostMapping("/create")
     public ResponseEntity<ResponseObject> createInvoice(@RequestBody BookingDto bookingDto) {
         try {
@@ -65,5 +75,11 @@ public class InvoiceController {
                             .responseCode(HttpStatus.BAD_REQUEST.value())
                             .build());
         }
+    }
+
+    @GetMapping("/check-invoice-exists/{bookingId}")
+    public ResponseEntity<ResponseObject> checkInvoiceExistsByBookingId(@PathVariable Integer bookingId) {
+        Boolean exists = invoiceService.isInvoiceExistsByBookingId(bookingId);
+        return ResponseEntity.ok(ResponseObject.builder().data(exists).build());
     }
 } 

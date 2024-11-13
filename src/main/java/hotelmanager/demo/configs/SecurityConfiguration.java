@@ -84,7 +84,15 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/admin/invoices/getall").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
                         .requestMatchers(HttpMethod.GET, "/admin/invoices/{id}").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
                         .requestMatchers(HttpMethod.GET, "/admin/invoices/customer/{customerId}").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
+                        .requestMatchers(HttpMethod.GET, "/admin/invoices/booking/{bookingId}").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
                         .requestMatchers(HttpMethod.POST, "/admin/invoices/create").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
+                        .requestMatchers(HttpMethod.GET, "/admin/invoices/check-invoice-exists/{bookingId}").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
+
+                        .requestMatchers(HttpMethod.GET, "/api/images/room/{roomId}").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
+                        .requestMatchers(HttpMethod.POST, "/api/images/upload").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
+                        .requestMatchers(HttpMethod.POST, "/api/images/upload/multiple").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
+                        .requestMatchers(HttpMethod.DELETE, "/api/images/{publicId}").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
+
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)

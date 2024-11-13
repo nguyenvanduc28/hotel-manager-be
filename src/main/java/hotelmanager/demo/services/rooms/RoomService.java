@@ -1,12 +1,10 @@
 package hotelmanager.demo.services.rooms;
 
+import hotelmanager.demo.dto.bookingDtos.ImageDto;
 import hotelmanager.demo.dto.roomDtos.*;
 import hotelmanager.demo.exceptions.NotFoundException;
 import hotelmanager.demo.models.*;
-import hotelmanager.demo.repositories.ConsumableRepository;
-import hotelmanager.demo.repositories.EquipmentRepository;
-import hotelmanager.demo.repositories.RoomRepository;
-import hotelmanager.demo.repositories.RoomTypeRepository;
+import hotelmanager.demo.repositories.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,8 +26,80 @@ public class RoomService {
     private ConsumableRepository consumableRepository;
     @Autowired
     private EquipmentRepository equipmentRepository;
+    @Autowired
+    private ImageRepository imageRepository;
 
     private ModelMapper modelMapper = new ModelMapper();
+
+    // Helper method to map room properties
+    private void mapRoomProperties(Room room, RoomDto roomDto) {
+        room.setRoomNumber(roomDto.getRoomNumber());
+        room.setDescription(roomDto.getDescription());
+        room.setFloor(roomDto.getFloor());
+        room.setSize(roomDto.getSize());
+        room.setIsAvailable(roomDto.getIsAvailable());
+        room.setIsSmokingAllowed(roomDto.getIsSmokingAllowed());
+        room.setHasPrivateKitchen(roomDto.getHasPrivateKitchen());
+        room.setHasPrivateBathroom(roomDto.getHasPrivateBathroom());
+        room.setHasBalcony(roomDto.getHasBalcony());
+        room.setHasLakeView(roomDto.getHasLakeView());
+        room.setHasGardenView(roomDto.getHasGardenView());
+        room.setHasPoolView(roomDto.getHasPoolView());
+        room.setHasMountainView(roomDto.getHasMountainView());
+        room.setHasLandmarkView(roomDto.getHasLandmarkView());
+        room.setHasCityView(roomDto.getHasCityView());
+        room.setHasRiverView(roomDto.getHasRiverView());
+        room.setHasCourtyardView(roomDto.getHasCourtyardView());
+        room.setHasFreeWifi(roomDto.getHasFreeWifi());
+        room.setHasSoundproofing(roomDto.getHasSoundproofing());
+    }
+
+    // Helper method to update room relationships
+    private void updateRoomRelationships(Room room, RoomDto roomDto) {
+        // Update consumables
+        consumableRepository.findConsumablesByRoomId(room.getId())
+            .forEach(c -> consumableRepository.updateRoomId(c.getId(), null));
+        roomDto.getConsumables()
+            .forEach(c -> consumableRepository.updateRoomId(c.getId(), room.getId()));
+
+        // Update equipment
+        equipmentRepository.findEquipmentByRoomId(room.getId())
+            .forEach(e -> equipmentRepository.updateRoomId(e.getId(), null));
+        roomDto.getEquipmentList()
+            .forEach(e -> equipmentRepository.updateRoomId(e.getId(), room.getId()));
+
+        // Update images
+        imageRepository.findAllImagesByRoomId(room.getId())
+            .forEach(i -> imageRepository.deleteRoomIdByImageId(i.getId()));
+        roomDto.getImageList()
+            .forEach(i -> imageRepository.updateRoomIdByImageId(room.getId(), i.getId()));
+    }
+
+    // Helper method to populate room DTOs
+    private RoomDto populateRoomDto(IRoomDto iRoomDto) {
+        RoomDto roomDto = modelMapper.map(iRoomDto, RoomDto.class);
+        
+        RoomType roomType = roomTypeRepository.findById(iRoomDto.getRoomTypeId())
+            .orElseThrow(() -> new NotFoundException("Room type not found"));
+        roomDto.setRoomType(modelMapper.map(roomType, RoomTypeDto.class));
+
+        List<ConsumableDto> consumables = List.of(modelMapper.map(
+            consumableRepository.findConsumablesByRoomId(roomDto.getId()),
+            ConsumableDto[].class));
+        roomDto.setConsumables(consumables);
+
+        List<EquipmentDto> equipment = List.of(modelMapper.map(
+            equipmentRepository.findEquipmentByRoomId(roomDto.getId()),
+            EquipmentDto[].class));
+        roomDto.setEquipmentList(equipment);
+
+        List<ImageDto> imageDtos = List.of(modelMapper.map(
+            imageRepository.findAllImagesByRoomId(roomDto.getId()),
+            ImageDto[].class));
+        roomDto.setImageList(imageDtos);
+
+        return roomDto;
+    }
 
     @Transactional
     public RoomTypeDto createRoomType (RoomTypeDto roomTypeDto) {
@@ -49,46 +119,16 @@ public class RoomService {
     @Transactional
     public RoomDto createRoom (RoomDto roomDto) {
         Room room = new Room();
-        room.setRoomNumber(roomDto.getRoomNumber());
+        mapRoomProperties(room, roomDto);
+        
         RoomType roomType = roomTypeRepository.findById(roomDto.getRoomType().getId())
-                        .orElseThrow(() -> new NotFoundException("not found room type"));
-
+            .orElseThrow(() -> new NotFoundException("Room type not found"));
         room.setRoomType(roomType);
-        room.setDescription(roomDto.getDescription());
-        room.setFloor(roomDto.getFloor());
-        room.setSize(roomDto.getSize());
-        room.setHasBalcony(roomDto.getHasBalcony());
-        room.setIsAvailable(roomDto.getIsAvailable());
-        room.setIsSmokingAllowed(roomDto.getIsSmokingAllowed());
-        room.setHasPrivateKitchen(roomDto.getHasPrivateKitchen());
-        room.setHasPrivateBathroom(roomDto.getHasPrivateBathroom());
-        room.setHasBalcony(roomDto.getHasBalcony());
-        room.setHasLakeView(roomDto.getHasLakeView());
-        room.setHasGardenView(roomDto.getHasGardenView());
-        room.setHasPoolView(roomDto.getHasPoolView());
-        room.setHasMountainView(roomDto.getHasMountainView());
-        room.setHasLandmarkView(roomDto.getHasLandmarkView());
-        room.setHasCityView(roomDto.getHasCityView());
-        room.setHasRiverView(roomDto.getHasRiverView());
-        room.setHasCourtyardView(roomDto.getHasCourtyardView());
-        room.setHasFreeWifi(roomDto.getHasFreeWifi());
-        room.setHasSoundproofing(roomDto.getHasSoundproofing());
-        Room roomNew = roomRepository.save(room);
-
-        for (ConsumableDto consumableDto : roomDto.getConsumables()) {
-            Consumable consumable = consumableRepository.findById(consumableDto.getId())
-                    .orElseThrow(() -> new NotFoundException("not found consumable"));
-            consumableRepository.updateRoomId(consumable.getId(), roomNew.getId());
-        }
-        // Cập nhật danh sách equipment
-        for (EquipmentDto equipmentDto : roomDto.getEquipmentList()) {
-            Equipment equipment = equipmentRepository.findById(equipmentDto.getId())
-                    .orElseThrow(() -> new NotFoundException("not found equipment"));
-            equipment.setRoom(roomNew);
-            equipmentRepository.updateRoomId(equipment.getId(), roomNew.getId());
-        }
-
-        return modelMapper.map(roomNew, RoomDto.class);
+        
+        Room savedRoom = roomRepository.save(room);
+        updateRoomRelationships(savedRoom, roomDto);
+        
+        return modelMapper.map(savedRoom, RoomDto.class);
     }
     @Transactional
     public RoomDto updateRoom (RoomDto roomDto) {
@@ -96,19 +136,12 @@ public class RoomService {
         if (roomDto1 == null) throw new NotFoundException("Không tìm thấy room");
         Room room = modelMapper.map(roomDto1, Room.class);
 
-        room.setRoomNumber(roomDto.getRoomNumber());
+        mapRoomProperties(room, roomDto);
+        
         RoomType roomType = roomTypeRepository.findById(roomDto.getRoomType().getId())
-                .orElseThrow(() -> new NotFoundException("not found room type"));
+            .orElseThrow(() -> new NotFoundException("not found room type"));
 
         room.setRoomType(roomType);
-        room.setDescription(roomDto.getDescription());
-        room.setFloor(roomDto.getFloor());
-        room.setSize(roomDto.getSize());
-        room.setHasBalcony(roomDto.getHasBalcony());
-        room.setIsAvailable(roomDto.getIsAvailable());
-        room.setIsSmokingAllowed(roomDto.getIsSmokingAllowed());
-        room.setHasPrivateKitchen(roomDto.getHasPrivateKitchen());
-        room.setHasPrivateBathroom(roomDto.getHasPrivateBathroom());
         room.setHasBalcony(roomDto.getHasBalcony());
         room.setHasLakeView(roomDto.getHasLakeView());
         room.setHasGardenView(roomDto.getHasGardenView());
@@ -122,25 +155,7 @@ public class RoomService {
         room.setHasSoundproofing(roomDto.getHasSoundproofing());
         Room roomNew = roomRepository.save(room);
 
-        //danh sách consumables cũ.
-        List<IConsumableDto> consumableDtos = consumableRepository.findConsumablesByRoomId(roomDto.getId());
-        for (IConsumableDto consumableDto: consumableDtos) {
-            consumableRepository.updateRoomId(consumableDto.getId(), null);
-        }
-        //cập nhật danh sách mới.
-        for (ConsumableDto consumableDto : roomDto.getConsumables()) {
-            consumableRepository.updateRoomId(consumableDto.getId(), roomNew.getId());
-        }
-
-        //danh sách equipment cũ
-        List<IEquipmentDto> equipmentDtos = equipmentRepository.findEquipmentByRoomId(roomDto.getId());
-        for (IEquipmentDto equipmentDto: equipmentDtos) {
-            equipmentRepository.updateRoomId(equipmentDto.getId(), null);
-        }
-        //cập nhật danh sách mới.
-        for (EquipmentDto equipmentDto : roomDto.getEquipmentList()) {
-            equipmentRepository.updateRoomId(equipmentDto.getId(), roomNew.getId());
-        }
+        updateRoomRelationships(roomNew, roomDto);
 
         return modelMapper.map(roomNew, RoomDto.class);
     }
@@ -160,17 +175,7 @@ public class RoomService {
     public RoomDto getRoomById(Integer id) {
         IRoomDto iRoomDto = roomRepository.findRoomById(id);
         if (iRoomDto == null) throw new NotFoundException("Không tìm thấy room");
-        RoomDto roomDto = modelMapper.map(iRoomDto, RoomDto.class);
-
-        RoomType roomType = roomTypeRepository.findById(iRoomDto.getRoomTypeId()).orElseThrow(() -> new NotFoundException("Lỗi type room"));
-        roomDto.setRoomType(modelMapper.map(roomType, RoomTypeDto.class));
-        List<IConsumableDto> consumableDtos = consumableRepository.findConsumablesByRoomId(roomDto.getId());
-        List<ConsumableDto> consumableDtos1 = List.of(modelMapper.map(consumableDtos, ConsumableDto[].class));
-        roomDto.setConsumables(consumableDtos1);
-
-        List<IEquipmentDto> equipmentDtos = equipmentRepository.findEquipmentByRoomId(roomDto.getId());
-        List<EquipmentDto> equipmentDtos1 = List.of(modelMapper.map(equipmentDtos, EquipmentDto[].class));
-        roomDto.setEquipmentList(equipmentDtos1);
+        RoomDto roomDto = populateRoomDto(iRoomDto);
 
         return roomDto;
     }
@@ -179,7 +184,7 @@ public class RoomService {
         List<IRoomDto> availableRooms = roomRepository.findAvailableRooms(checkInDate, checkOutDate);
         List<RoomDto> roomDtos = new ArrayList<>();
         for (IRoomDto iRoomDto : availableRooms) {
-            RoomDto roomDto = modelMapper.map(iRoomDto, RoomDto.class);
+            RoomDto roomDto = populateRoomDto(iRoomDto);
             RoomType roomType = roomTypeRepository.findById(roomDto.getRoomType().getId()).orElseThrow(()->new NotFoundException("Lỗi"));
             roomDto.setRoomType(modelMapper.map(roomType, RoomTypeDto.class));
             //lấy tiện ích
@@ -188,8 +193,14 @@ public class RoomService {
 
             List<IEquipmentDto> equipmentDtos = equipmentRepository.findEquipmentByRoomId(roomDto.getId());
             List<EquipmentDto> equipmentDtos1 = List.of(modelMapper.map(equipmentDtos, EquipmentDto[].class));
+
+            List<ImageDto> imageDtos = List.of(modelMapper.map(
+                imageRepository.findAllImagesByRoomId(roomDto.getId()),
+                ImageDto[].class));
+
             roomDto.setConsumables(consumableDtos1);
             roomDto.setEquipmentList(equipmentDtos1);
+            roomDto.setImageList(imageDtos);
             roomDtos.add(roomDto);
         }
 
@@ -200,7 +211,7 @@ public class RoomService {
         List<IRoomDto> iRoomDtos = roomRepository.findAllRooms();
         List<RoomDto> roomDtos = new ArrayList<>();
         for (IRoomDto iRoomDto : iRoomDtos) {
-            RoomDto roomDto = modelMapper.map(iRoomDto, RoomDto.class);
+            RoomDto roomDto = populateRoomDto(iRoomDto);
             RoomType roomType = roomTypeRepository.findById(roomDto.getRoomType().getId()).orElseThrow(()->new NotFoundException("Lỗi"));
             roomDto.setRoomType(modelMapper.map(roomType, RoomTypeDto.class));
 
@@ -209,8 +220,14 @@ public class RoomService {
 
             List<IEquipmentDto> equipmentDtos = equipmentRepository.findEquipmentByRoomId(roomDto.getId());
             List<EquipmentDto> equipmentDtos1 = List.of(modelMapper.map(equipmentDtos, EquipmentDto[].class));
+
+            List<ImageDto> imageDtos = List.of(modelMapper.map(
+                imageRepository.findAllImagesByRoomId(roomDto.getId()),
+                ImageDto[].class));
+
             roomDto.setConsumables(consumableDtos1);
             roomDto.setEquipmentList(equipmentDtos1);
+            roomDto.setImageList(imageDtos);
             roomDtos.add(roomDto);
         }
 

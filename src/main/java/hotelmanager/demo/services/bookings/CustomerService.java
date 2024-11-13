@@ -49,11 +49,11 @@ public class CustomerService {
         return customerDtos;
     }
     @Transactional(readOnly = true)
-    public List<CustomerDto> searchCustomersByName(String name) {
+    public List<CustomerDto> searchCustomersByNameOrPhoneNumber(String name) {
         if (name == null || name.trim().isEmpty()) {
             return getAllCustomers();
         }
-        List<Customer> customers = customerRepository.findByNameContainingIgnoreCase(name);
+        List<Customer> customers = customerRepository.findAllCustomersByNameOrPhoneCus(name);
         return List.of(modelMapper.map(customers, CustomerDto[].class));
     }
 

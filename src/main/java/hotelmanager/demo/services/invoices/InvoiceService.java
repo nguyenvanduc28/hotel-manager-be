@@ -15,6 +15,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -48,10 +50,21 @@ public class InvoiceService {
         return convertToInvoiceDtoList(invoices);
     }
 
+    @Transactional(readOnly = true)
+    public InvoiceDto getInvoiceByBookingId(Integer bookingId) {
+        IInvoiceDto invoice = invoiceRepository.findInvoiceDtoByBookingId(bookingId);
+        return convertToInvoiceDto(invoice);
+    }
+
     @Transactional
     public InvoiceDto createInvoice(BookingDto bookingDto) {
+        if (isInvoiceExistsByBookingId(bookingDto.getId())) {
+            throw new RuntimeException("Booking đã được thanh toán");
+        }
         validateBooking(bookingDto);
         Invoice invoice = createInvoiceFromBooking(bookingDto);
+        Long issueDate = Instant.now().getEpochSecond();
+        invoice.setIssueDate(issueDate);
         Invoice savedInvoice = invoiceRepository.save(invoice);
         bookingRepository.updateStatusBooking(bookingDto.getId(), BookingStatus.COMPLETED);
         InvoiceDto invoiceDto = modelMapper.map(savedInvoice, InvoiceDto.class);
@@ -153,5 +166,9 @@ public class InvoiceService {
             } catch (NotFoundException ignored) {
             }
         }
+    }
+
+    public Boolean isInvoiceExistsByBookingId(Integer bookingId) {
+        return invoiceRepository.countByBookingId(bookingId) > 0;
     }
 }

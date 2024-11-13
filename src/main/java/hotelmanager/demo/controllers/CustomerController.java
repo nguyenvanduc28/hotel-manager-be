@@ -42,11 +42,11 @@ public class CustomerController {
     }
     @GetMapping("search")
     public ResponseEntity<ResponseObject> searchCustomersByName(@RequestParam String name) {
-        List<CustomerDto> customerList = customerService.searchCustomersByName(name);
+        List<CustomerDto> customerList = customerService.searchCustomersByNameOrPhoneNumber(name);
 
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(customerList)
-                .message("Fetched customers by name")
+                .message("Fetched customers by name or phone number")
                 .responseCode(HttpStatus.OK.value())
                 .build());
     }

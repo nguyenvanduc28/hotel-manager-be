@@ -2,6 +2,7 @@ package hotelmanager.demo.dto.roomDtos;
 
 import hotelmanager.demo.dto.BaseDto;
 import hotelmanager.demo.dto.bookingDtos.BookingDto;
+import hotelmanager.demo.dto.bookingDtos.ImageDto;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,4 +33,5 @@ public class RoomDto extends BaseDto {
     private RoomTypeDto roomType;
     private List<ConsumableDto> consumables;
     private List<EquipmentDto> equipmentList;
+    private List<ImageDto> imageList;
 }

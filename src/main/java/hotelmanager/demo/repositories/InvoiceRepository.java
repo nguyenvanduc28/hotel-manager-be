@@ -11,39 +11,63 @@ import java.util.List;
 @Repository
 public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
     @Query(value = """
-            SELECT i.total_amount AS totalAmount,
+            SELECT i.id AS id,
+                   i.total_amount AS totalAmount,
                    i.payment_method AS paymentMethod, 
                    i.booking_id AS bookingId,
                    i.customer_id AS customerId,
                    i.issue_date AS issueDate,
                    i.payment_status AS paymentStatus
-            FROM invoices i
+            FROM invoice i
             ORDER BY i.issue_date DESC
             """, nativeQuery = true)
     List<IInvoiceDto> findAllInvoiceDtos();
 
     @Query(value = """
-            SELECT i.total_amount AS totalAmount,
+            SELECT i.id AS id,
+                   i.total_amount AS totalAmount,
                    i.payment_method AS paymentMethod,
                    i.booking_id AS bookingId, 
                    i.customer_id AS customerId,
                    i.issue_date AS issueDate,
                    i.payment_status AS paymentStatus
-            FROM invoices i
+            FROM invoice i
             WHERE i.id = :invoiceId
             """, nativeQuery = true)
     IInvoiceDto findInvoiceDtoById(@Param("invoiceId") Integer invoiceId);
 
     @Query(value = """
-            SELECT i.total_amount AS totalAmount,
+            SELECT i.id AS id,
+                   i.total_amount AS totalAmount,
                    i.payment_method AS paymentMethod,
                    i.booking_id AS bookingId,
                    i.customer_id AS customerId,
                    i.issue_date AS issueDate,
                    i.payment_status AS paymentStatus
-            FROM invoices i
+            FROM invoice i
             WHERE i.customer_id = :customerId
             ORDER BY i.issue_date DESC
             """, nativeQuery = true)
     List<IInvoiceDto> findInvoiceDtosByCustomerId(@Param("customerId") Integer customerId);
+
+    @Query(value = """
+            SELECT i.id AS id,
+                   i.total_amount AS totalAmount,
+                   i.payment_method AS paymentMethod,
+                   i.booking_id AS bookingId,
+                   i.customer_id AS customerId,
+                   i.issue_date AS issueDate,
+                   i.payment_status AS paymentStatus
+            FROM invoice i
+            WHERE i.booking_id = :bookingId
+            """, nativeQuery = true)
+    IInvoiceDto findInvoiceDtoByBookingId(@Param("bookingId") Integer bookingId);
+
+    @Query(value = """
+            SELECT COUNT(i.booking_id)
+            FROM invoice i
+            WHERE i.booking_id = :bookingId
+            """, nativeQuery = true)
+    Integer countByBookingId(@Param("bookingId") Integer bookingId);
+
 }
