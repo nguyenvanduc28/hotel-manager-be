@@ -11,6 +11,7 @@ public class ImageDto extends BaseDto {
     private String type;
     private Long size;
     private Integer roomId;
+    private Integer hotelId;
     private String publicId;
     private String fileName;
     private String description;

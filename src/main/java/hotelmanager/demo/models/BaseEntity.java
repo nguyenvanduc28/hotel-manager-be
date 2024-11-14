@@ -24,4 +24,9 @@ public abstract class BaseEntity {
     @Column(name = "updated_at")
     @UpdateTimestamp
     private Timestamp updatedAt;
+
+    private Integer hotelId;
+    
+    @Column(name = "deleted", columnDefinition = "boolean default false")
+    private Boolean deleted = false;
 }

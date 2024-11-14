@@ -28,23 +28,24 @@ public class EquipmentService {
     private ModelMapper modelMapper = new ModelMapper();
 
     @Transactional
-    public EquipmentCategoryDto createEquipmentCategory(EquipmentCategoryDto equipmentCategoryDto) {
+    public EquipmentCategoryDto createEquipmentCategory(EquipmentCategoryDto equipmentCategoryDto, Integer hotelId) {
         EquipmentCategory equipmentCategory = new EquipmentCategory();
         equipmentCategory.setName(equipmentCategoryDto.getName());
         equipmentCategory.setDescription(equipmentCategoryDto.getDescription());
-
+        equipmentCategory.setHotelId(hotelId);
         EquipmentCategoryDto categoryDto = modelMapper.map(equipmentCategoryRepository.save(equipmentCategory), EquipmentCategoryDto.class);
         return categoryDto;
     }
 
     @Transactional
-    public EquipmentDto createEquipment(EquipmentDto equipmentDto) {
+    public EquipmentDto createEquipment(EquipmentDto equipmentDto, Integer hotelId) {
         Equipment equipment = new Equipment();
         equipment.setName(equipmentDto.getName());
         equipment.setDescription(equipmentDto.getDescription());
         equipment.setBarcode(equipmentDto.getBarcode());
         equipment.setInstallationDate(equipmentDto.getInstallationDate());
         equipment.setStatus(equipmentDto.getStatus());
+        equipment.setHotelId(hotelId);
 
         EquipmentCategory equipmentCategory = equipmentCategoryRepository.findById(equipmentDto.getEquipmentCategory().getId())
                 .orElseThrow(() -> new NotFoundException("not found category"));
@@ -54,7 +55,7 @@ public class EquipmentService {
         return equipmentDtoN;
     }
     @Transactional
-    public List<EquipmentDto> createEquipmentList(List<EquipmentDto> equipmentDtos) {
+    public List<EquipmentDto> createEquipmentList(List<EquipmentDto> equipmentDtos, Integer hotelId) {
         List<EquipmentDto> equipmentDtos1 = new ArrayList<>();
         for (EquipmentDto equipmentDto: equipmentDtos){
             Equipment equipment = new Equipment();
@@ -63,7 +64,7 @@ public class EquipmentService {
             equipment.setBarcode(equipmentDto.getBarcode());
             equipment.setInstallationDate(equipmentDto.getInstallationDate());
             equipment.setStatus(equipmentDto.getStatus());
-
+            equipment.setHotelId(hotelId);
             EquipmentCategory equipmentCategory = equipmentCategoryRepository.findById(equipmentDto.getEquipmentCategory().getId())
                     .orElseThrow(() -> new NotFoundException("not found category"));
             equipment.setEquipmentCategory(equipmentCategory);
@@ -75,14 +76,14 @@ public class EquipmentService {
         return equipmentDtos1;
     }
     @Transactional
-    public EquipmentDto updateEquipment(EquipmentDto equipmentDto) {
+    public EquipmentDto updateEquipment(EquipmentDto equipmentDto, Integer hotelId) {
         Equipment equipment = equipmentRepository.findById(equipmentDto.getId()).orElseThrow(()-> new NotFoundException("Không tìm thấy equipment"));
         equipment.setName(equipmentDto.getName());
         equipment.setDescription(equipmentDto.getDescription());
         equipment.setBarcode(equipmentDto.getBarcode());
         equipment.setInstallationDate(equipmentDto.getInstallationDate());
         equipment.setStatus(equipmentDto.getStatus());
-
+        equipment.setHotelId(hotelId);
         EquipmentCategory equipmentCategory = equipmentCategoryRepository.findById(equipmentDto.getEquipmentCategory().getId())
                 .orElseThrow(() -> new NotFoundException("not found category"));
         equipment.setEquipmentCategory(equipmentCategory);
@@ -93,15 +94,13 @@ public class EquipmentService {
 
 
     @Transactional(readOnly = true)
-    public List<EquipmentCategoryDto> getAllEquipmentCategories() {
-        return equipmentCategoryRepository.findAll().stream()
-                .map(category -> modelMapper.map(category, EquipmentCategoryDto.class))
-                .collect(Collectors.toList());
+    public List<EquipmentCategoryDto> getAllEquipmentCategories(Integer hotelId) {
+        return List.of(modelMapper.map(equipmentCategoryRepository.findAllEquipCateByHotelId(hotelId), EquipmentCategoryDto[].class));
     }
 
     @Transactional(readOnly = true)
-    public List<EquipmentDto> getAllEquipment() {
-        List<IEquipmentDto> equipments = equipmentRepository.findAllEquipment();
+    public List<EquipmentDto> getAllEquipment(Integer hotelId) {
+        List<IEquipmentDto> equipments = equipmentRepository.findAllEquipment(hotelId);
         List<EquipmentDto> equipmentDtos1 = new ArrayList<>();
         for (IEquipmentDto iEquipmentDto : equipments) {
             EquipmentDto equipmentDto = modelMapper.map(iEquipmentDto, EquipmentDto.class);

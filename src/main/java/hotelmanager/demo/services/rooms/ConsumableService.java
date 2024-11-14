@@ -32,17 +32,17 @@ public class ConsumableService {
     private ModelMapper modelMapper = new ModelMapper();
 
     @Transactional
-    public ConsumableCategoryDto createConsumableCategory(ConsumableCategoryDto consumableCategoryDto) {
+    public ConsumableCategoryDto createConsumableCategory(ConsumableCategoryDto consumableCategoryDto, Integer hotelId) {
         ConsumableCategory consumableCategory = new ConsumableCategory();
         consumableCategory.setName(consumableCategoryDto.getName());
         consumableCategory.setDescription(consumableCategoryDto.getDescription());
-
+        consumableCategory.setHotelId(hotelId);
         ConsumableCategoryDto categoryDto = modelMapper.map(consumableCategoryRepository.save(consumableCategory), ConsumableCategoryDto.class);
         return categoryDto;
     }
 
     @Transactional
-    public ConsumableDto createConsumable(ConsumableDto consumableDto) {
+    public ConsumableDto createConsumable(ConsumableDto consumableDto, Integer hotelId) {
         Consumable consumable = new Consumable();
         consumable.setName(consumableDto.getName());
         consumable.setDescription(consumableDto.getDescription());
@@ -51,7 +51,7 @@ public class ConsumableService {
         consumable.setBarcode(consumableDto.getBarcode());
         consumable.setUnit(consumableDto.getUnit());
         consumable.setExpiryDate(consumableDto.getExpiryDate());
-
+        consumable.setHotelId(hotelId);
         ConsumableCategory consumableCategory = consumableCategoryRepository.findById(consumableDto.getConsumableCategory().getId())
                 .orElseThrow(() -> new NotFoundException("not found category"));
         consumable.setConsumableCategory(consumableCategory);
@@ -61,7 +61,7 @@ public class ConsumableService {
         return consumableDtoN;
     }
     @Transactional
-    public List<ConsumableDto> createConsumableList(List<ConsumableDto> consumableDtos) {
+    public List<ConsumableDto> createConsumableList(List<ConsumableDto> consumableDtos, Integer hotelId) {
         List<ConsumableDto> consumableDtos1 = new ArrayList<>();
 
         for (ConsumableDto consumableDto:consumableDtos) {
@@ -73,7 +73,7 @@ public class ConsumableService {
         consumable.setBarcode(consumableDto.getBarcode());
         consumable.setUnit(consumableDto.getUnit());
         consumable.setExpiryDate(consumableDto.getExpiryDate());
-
+        consumable.setHotelId(hotelId);
         ConsumableCategory consumableCategory = consumableCategoryRepository.findById(consumableDto.getConsumableCategory().getId())
                 .orElseThrow(() -> new NotFoundException("not found category"));
         consumable.setConsumableCategory(consumableCategory);
@@ -86,7 +86,7 @@ public class ConsumableService {
         return consumableDtos1;
     }
     @Transactional
-    public ConsumableDto updateConsumable(ConsumableDto consumableDto) {
+    public ConsumableDto updateConsumable(ConsumableDto consumableDto, Integer hotelId) {
         Consumable consumable = consumableRepository.findById(consumableDto.getId())
                 .orElseThrow(() -> new NotFoundException("Không tìm thấy consumable"));
         consumable.setName(consumableDto.getName());
@@ -96,7 +96,7 @@ public class ConsumableService {
         consumable.setBarcode(consumableDto.getBarcode());
         consumable.setUnit(consumableDto.getUnit());
         consumable.setExpiryDate(consumableDto.getExpiryDate());
-
+        consumable.setHotelId(hotelId);
         ConsumableCategory consumableCategory = consumableCategoryRepository.findById(consumableDto.getConsumableCategory().getId())
                 .orElseThrow(() -> new NotFoundException("not found category"));
         consumable.setConsumableCategory(consumableCategory);
@@ -106,15 +106,13 @@ public class ConsumableService {
         return consumableDtoN;
     }
     @Transactional(readOnly = true)
-    public List<ConsumableCategoryDto> getAllConsumableCategories() {
-        return consumableCategoryRepository.findAll().stream()
-                .map(category -> modelMapper.map(category, ConsumableCategoryDto.class))
-                .collect(Collectors.toList());
+    public List<ConsumableCategoryDto> getAllConsumableCategories(Integer hotelId) {
+        return List.of(modelMapper.map(consumableCategoryRepository.findAllConCategoriesByHotelId(hotelId), ConsumableCategoryDto[].class));
     }
 
     @Transactional(readOnly = true)
-    public List<ConsumableDto> getAllConsumables() {
-        List<IConsumableDto> consumableDtos = consumableRepository.findAllConsumables();
+    public List<ConsumableDto> getAllConsumables(Integer hotelId) {
+        List<IConsumableDto> consumableDtos = consumableRepository.findAllConsumables(hotelId);
         List<ConsumableDto> consumableDtos2 = new ArrayList<>();
         for (IConsumableDto iConsumableDto:consumableDtos) {
             ConsumableDto consumableDto = modelMapper.map(iConsumableDto, ConsumableDto.class);

@@ -102,7 +102,7 @@ public class RoomService {
     }
 
     @Transactional
-    public RoomTypeDto createRoomType (RoomTypeDto roomTypeDto) {
+    public RoomTypeDto createRoomType (RoomTypeDto roomTypeDto, Integer hotelId) {
         RoomType roomType = new RoomType();
         roomType.setName(roomTypeDto.getName());
         roomType.setDescription(roomTypeDto.getDescription());
@@ -112,15 +112,15 @@ public class RoomService {
         roomType.setExtraBedAvailable(roomTypeDto.getExtraBedAvailable());
         roomType.setSizeRange(roomTypeDto.getSizeRange());
         roomType.setSingleBedCount(roomTypeDto.getSingleBedCount());
-
+        roomType.setHotelId(hotelId);
         RoomTypeDto roomTypeDto1 = modelMapper.map(roomTypeRepository.save(roomType), RoomTypeDto.class);
         return roomTypeDto1;
     }
     @Transactional
-    public RoomDto createRoom (RoomDto roomDto) {
+    public RoomDto createRoom (RoomDto roomDto, Integer hotelId) {
         Room room = new Room();
         mapRoomProperties(room, roomDto);
-        
+        room.setHotelId(hotelId);
         RoomType roomType = roomTypeRepository.findById(roomDto.getRoomType().getId())
             .orElseThrow(() -> new NotFoundException("Room type not found"));
         room.setRoomType(roomType);
@@ -131,13 +131,13 @@ public class RoomService {
         return modelMapper.map(savedRoom, RoomDto.class);
     }
     @Transactional
-    public RoomDto updateRoom (RoomDto roomDto) {
+    public RoomDto updateRoom (RoomDto roomDto, Integer hotelId) {
         IRoomDto roomDto1 = roomRepository.findRoomById(roomDto.getId());
         if (roomDto1 == null) throw new NotFoundException("Không tìm thấy room");
         Room room = modelMapper.map(roomDto1, Room.class);
 
         mapRoomProperties(room, roomDto);
-        
+        room.setHotelId(hotelId);
         RoomType roomType = roomTypeRepository.findById(roomDto.getRoomType().getId())
             .orElseThrow(() -> new NotFoundException("not found room type"));
 
@@ -160,8 +160,8 @@ public class RoomService {
         return modelMapper.map(roomNew, RoomDto.class);
     }
     @Transactional(readOnly = true)
-    public List<RoomTypeDto> getAllRoomTypes() {
-        List<RoomType> roomTypes = roomTypeRepository.findAll();
+    public List<RoomTypeDto> getAllRoomTypes(Integer hotelId) {
+        List<RoomType> roomTypes = roomTypeRepository.findAllByHotelId(hotelId);
         List<RoomTypeDto> roomTypeDtos = new ArrayList<>();
 
         for (RoomType roomType : roomTypes) {
@@ -180,8 +180,8 @@ public class RoomService {
         return roomDto;
     }
     @Transactional(readOnly = true)
-    public List<RoomDto> getAvailableRooms(Long checkInDate, Long checkOutDate) {
-        List<IRoomDto> availableRooms = roomRepository.findAvailableRooms(checkInDate, checkOutDate);
+    public List<RoomDto> getAvailableRooms(Long checkInDate, Long checkOutDate, Integer hotelId) {
+        List<IRoomDto> availableRooms = roomRepository.findAvailableRooms(checkInDate, checkOutDate, hotelId);
         List<RoomDto> roomDtos = new ArrayList<>();
         for (IRoomDto iRoomDto : availableRooms) {
             RoomDto roomDto = populateRoomDto(iRoomDto);
@@ -207,8 +207,8 @@ public class RoomService {
         return roomDtos;
     }
     @Transactional(readOnly = true)
-    public List<RoomDto> getAllRooms() {
-        List<IRoomDto> iRoomDtos = roomRepository.findAllRooms();
+    public List<RoomDto> getAllRooms(Integer hotelId) {
+        List<IRoomDto> iRoomDtos = roomRepository.findAllRooms(hotelId);
         List<RoomDto> roomDtos = new ArrayList<>();
         for (IRoomDto iRoomDto : iRoomDtos) {
             RoomDto roomDto = populateRoomDto(iRoomDto);

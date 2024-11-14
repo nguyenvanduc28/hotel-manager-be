@@ -3,11 +3,13 @@ package hotelmanager.demo.controllers;
 import hotelmanager.demo.dto.ResponseObject;
 import hotelmanager.demo.dto.bookingDtos.BookingDto;
 import hotelmanager.demo.dto.invoiceDtos.InvoiceDto;
+import hotelmanager.demo.security.CustomUserDetails;
 import hotelmanager.demo.services.invoices.InvoiceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,8 +21,8 @@ public class InvoiceController {
     private final InvoiceService invoiceService;
 
     @GetMapping("/getall")
-    public ResponseEntity<ResponseObject> getAllInvoices() {
-        List<InvoiceDto> invoices = invoiceService.getAllInvoices();
+    public ResponseEntity<ResponseObject> getAllInvoices(@AuthenticationPrincipal CustomUserDetails user) {
+        List<InvoiceDto> invoices = invoiceService.getAllInvoices(user.getUser().getHotelId());
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(invoices)
                 .message("Fetched all invoices")
@@ -59,9 +61,9 @@ public class InvoiceController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<ResponseObject> createInvoice(@RequestBody BookingDto bookingDto) {
+    public ResponseEntity<ResponseObject> createInvoice(@RequestBody BookingDto bookingDto, @AuthenticationPrincipal CustomUserDetails user) {
         try {
-            InvoiceDto invoice = invoiceService.createInvoice(bookingDto);
+            InvoiceDto invoice = invoiceService.createInvoice(bookingDto, user.getUser().getHotelId());
             return ResponseEntity.ok(ResponseObject.builder()
                     .data(invoice)
                     .message("Tạo hóa đơn thành công")

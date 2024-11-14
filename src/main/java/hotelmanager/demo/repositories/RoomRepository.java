@@ -38,10 +38,11 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
             "LEFT JOIN bookings b ON br.booking_id = b.id\n" +
             "WHERE (b.status IS NULL \n" +
             "       OR (b.status NOT IN ('Đang chờ', 'Đã xác nhận') \n" +
-            "           OR (b.check_in_date > :checkOutDate OR b.check_out_date < :checkInDate)))",
+            "           OR (b.check_in_date > :checkOutDate OR b.check_out_date < :checkInDate))) AND r.hotel_id = :hotelId AND r.deleted = false",
             nativeQuery = true)
     List<IRoomDto> findAvailableRooms(@Param("checkInDate") Long checkInDate,
-                                      @Param("checkOutDate") Long checkOutDate);
+                                      @Param("checkOutDate") Long checkOutDate,
+                                      @Param("hotelId") Integer hotelId);
     @Query(value = "SELECT DISTINCT r.id AS id,\n" +
             "       r.room_number AS roomNumber,\n" +
             "       r.floor AS floor,\n" +
@@ -64,8 +65,9 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
             "       r.description AS description,\n" +
             "       r.images AS images,\n" +
             "       r.room_type_id AS roomTypeId\n" +
-            "FROM rooms r\n", nativeQuery = true)
-    List<IRoomDto> findAllRooms();
+            "FROM rooms r\n" +
+            "WHERE r.hotel_id = :hotelId and r.deleted = false", nativeQuery = true)
+    List<IRoomDto> findAllRooms(@Param("hotelId") Integer hotelId);
 
     @Query(value = "SELECT DISTINCT r.id AS id,\n" +
             "       r.room_number AS roomNumber,\n" +
@@ -89,7 +91,7 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
             "       r.description AS description,\n" +
             "       r.images AS images,\n" +
             "       r.room_type_id AS roomTypeId\n" +
-            "FROM rooms r WHERE r.id = :roomId\n",
+            "FROM rooms r WHERE r.id = :roomId AND r.deleted = false",
             nativeQuery = true)
     IRoomDto findRoomById(@Param("roomId") Integer roomId);
 

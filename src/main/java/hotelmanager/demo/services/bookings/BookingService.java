@@ -44,8 +44,8 @@ public class BookingService {
     private ModelMapper modelMapper = new ModelMapper();
 
     @Transactional(readOnly = true)
-    public List<BookingDto> getAllBooking() {
-        List<Booking> bookings = bookingRepository.findAll();
+    public List<BookingDto> getAllBooking(Integer hotelId) {
+        List<Booking> bookings = bookingRepository.findAllBookingsByHotelId(hotelId);
         List<BookingDto> bookingDtos = new ArrayList<>();
 
         for (Booking booking: bookings) {
@@ -113,33 +113,33 @@ public class BookingService {
         bookingDto.setEquipmentDamagedList(damagedDtos);
     }
 
-    public List<BookingDto> getSortedBookings() {
-        List<IBookingDto> bookings = bookingRepository.findAllBookingsSortedByStatusAndDate();
+    public List<BookingDto> getSortedBookings(Integer hotelId) {
+        List<IBookingDto> bookings = bookingRepository.findAllBookingsSortedByStatusAndDate(hotelId);
         List<BookingDto> bookingDtos = List.of(modelMapper.map(bookings, BookingDto[].class));
         bookingDtos.forEach(this::enrichBookingDto);
         return bookingDtos;
     }
 
-    public List<BookingDto> getAllBookingByStatus(String status) {
+    public List<BookingDto> getAllBookingByStatus(String status, Integer hotelId) {
         if (status == null || status.trim().isEmpty()) {
-            return getAllBooking();
+            return getAllBooking(hotelId);
         }
-        List<BookingDto> bookingDtos = List.of(modelMapper.map(bookingRepository.searchByStatus(status), BookingDto[].class));
+        List<BookingDto> bookingDtos = List.of(modelMapper.map(bookingRepository.searchByStatus(status, hotelId), BookingDto[].class));
         bookingDtos.forEach(this::enrichBookingDto);
         return bookingDtos;
     }
 
-    public List<BookingDto> getAllBookingByCusNam(String customerName) {
+    public List<BookingDto> getAllBookingByCusName(String customerName, Integer hotelId) {
         if (customerName == null || customerName.trim().isEmpty()) {
-            return getAllBooking();
+            return getAllBooking(hotelId);
         }
-        List<BookingDto> bookingDtos = List.of(modelMapper.map(bookingRepository.searchByCustomerName(customerName), BookingDto[].class));
+        List<BookingDto> bookingDtos = List.of(modelMapper.map(bookingRepository.searchByCustomerName(customerName, hotelId), BookingDto[].class));
         bookingDtos.forEach(this::enrichBookingDto);
         return bookingDtos;
     }
 
     @Transactional
-    public BookingDto createBooking(BookingDto bookingDto) {
+    public BookingDto createBooking(BookingDto bookingDto, Integer hotelId) {
         Booking booking = new Booking();
         booking.setCheckInDate(bookingDto.getCheckInDate());
         booking.setCheckOutDate(bookingDto.getCheckOutDate());
@@ -154,6 +154,7 @@ public class BookingService {
         booking.setIsGuaranteed(bookingDto.getIsGuaranteed());
         booking.setNumberOfAdults(booking.getNumberOfAdults());
         booking.setNumberOfChildren(bookingDto.getNumberOfChildren());
+        booking.setHotelId(hotelId);
 
         Customer customer = customerRepository.findById(bookingDto.getCustomer().getId())
                 .orElseThrow(() -> new NotFoundException("Không tìm thấy khách hàng"));

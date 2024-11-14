@@ -19,7 +19,7 @@ public interface ConsumableRepository extends JpaRepository<Consumable, Integer>
             "       c.expiry_date AS expiryDate, c.barcode AS barcode, \n" +
             "       c.description AS description\n" +
             "FROM consumables c\n" +
-            "WHERE c.room_id = :roomId", nativeQuery = true)
+            "WHERE c.room_id = :roomId AND c.deleted = false", nativeQuery = true)
     List<IConsumableDto> findConsumablesByRoomId(@Param("roomId") Integer roomId);
 
     @Query(value = "SELECT c.id AS id, c.name AS name, c.room_id AS roomId, \n" +
@@ -27,15 +27,15 @@ public interface ConsumableRepository extends JpaRepository<Consumable, Integer>
             "       c.price AS price, c.quantity AS quantity, c.unit AS unit, \n" +
             "       c.expiry_date AS expiryDate, c.barcode AS barcode, \n" +
             "       c.description AS description\n" +
-            "FROM consumables c\n", nativeQuery = true)
-    List<IConsumableDto> findAllConsumables();
+            "FROM consumables c\n WHERE c.hotel_id = :hotelId AND c.deleted = false", nativeQuery = true)
+    List<IConsumableDto> findAllConsumables(@Param("hotelId") Integer hotelId);
 
     @Query(value = "SELECT c.id AS id, c.name AS name, c.room_id AS roomId, \n" +
             "       c.consumable_category_id AS consumableCategoryId, \n" +
             "       c.price AS price, c.quantity AS quantity, c.unit AS unit, \n" +
             "       c.expiry_date AS expiryDate, c.barcode AS barcode, \n" +
             "       c.description AS description\n" +
-            "FROM consumables c WHERE c.room_id =:roomId OR c.room_id IS NULL\n", nativeQuery = true)
+            "FROM consumables c WHERE (c.room_id =:roomId OR c.room_id IS NULL) AND c.deleted = false", nativeQuery = true)
     List<IConsumableDto> findAllConsumablesAvailable(@Param("roomId") Integer roomId);
 
     @Query(value = "SELECT c.id AS id, c.name AS name, c.room_id AS roomId, \n" +
@@ -43,7 +43,7 @@ public interface ConsumableRepository extends JpaRepository<Consumable, Integer>
             "       c.price AS price, c.quantity AS quantity, c.unit AS unit, \n" +
             "       c.expiry_date AS expiryDate, c.barcode AS barcode, \n" +
             "       c.description AS description\n" +
-            "FROM consumables c WHERE c.room_id =:roomId\n", nativeQuery = true)
+            "FROM consumables c WHERE c.room_id =:roomId AND c.deleted = false", nativeQuery = true)
     List<IConsumableDto> findAllConsumablesByRoomId(@Param("roomId") Integer roomId);
 
     @Query(value = "SELECT c.id AS id, c.name AS name, c.room_id AS roomId, \n" +
@@ -51,17 +51,17 @@ public interface ConsumableRepository extends JpaRepository<Consumable, Integer>
             "       c.price AS price, c.quantity AS quantity, c.unit AS unit, \n" +
             "       c.expiry_date AS expiryDate, c.barcode AS barcode, \n" +
             "       c.description AS description\n" +
-            "FROM consumables c  WHERE c.id =:id\n", nativeQuery = true)
+            "FROM consumables c  WHERE c.id =:id AND c.deleted = false", nativeQuery = true)
     IConsumableDto findConsumableById(@Param("id") Integer id);
 
     @Transactional
     @Modifying
-    @Query(value = "UPDATE consumables SET room_id = :roomId WHERE id = :consumableId", nativeQuery = true)
+    @Query(value = "UPDATE consumables SET room_id = :roomId WHERE id = :consumableId AND deleted = false", nativeQuery = true)
     void updateRoomId(@Param("consumableId") int consumableId, @Param("roomId") Integer roomId);
 
     @Transactional
     @Modifying
-    @Query(value = "UPDATE consumables SET quantity = :quantity WHERE id = :consumableId", nativeQuery = true)
+    @Query(value = "UPDATE consumables SET quantity = :quantity WHERE id = :consumableId AND deleted = false", nativeQuery = true)
     void updateQuantity(@Param("consumableId") int consumableId, @Param("quantity") Integer quantity);
 
     

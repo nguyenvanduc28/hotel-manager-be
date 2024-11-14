@@ -14,7 +14,10 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer> {
             FROM customers c
             WHERE c.name LIKE %:query%
                OR c.phone_number LIKE %:query%
+               AND c.hotel_id = :hotelId
+               AND c.deleted = false
             """, nativeQuery = true)
-    List<Customer> findAllCustomersByNameOrPhoneCus(@Param("query") String query);
+    List<Customer> findAllCustomersByNameOrPhoneCus(@Param("query") String query, @Param("hotelId") Integer hotelId);
 
+    List<Customer> findAllCustomersByHotelIdAndDeletedFalse(@Param("hotelId") Integer hotelId);
 }

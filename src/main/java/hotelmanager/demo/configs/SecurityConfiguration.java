@@ -93,6 +93,11 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/api/images/upload/multiple").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
                         .requestMatchers(HttpMethod.DELETE, "/api/images/{publicId}").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
 
+                        .requestMatchers(HttpMethod.POST, "/admin/hotels/create").hasAnyAuthority(RoleType.ADMIN.name())
+                        .requestMatchers(HttpMethod.PUT, "/admin/hotels/update/{id}").hasAnyAuthority(RoleType.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/admin/hotels/get/{id}").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
+                        .requestMatchers(HttpMethod.GET, "/admin/hotels/get-info-hotel").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
+
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)

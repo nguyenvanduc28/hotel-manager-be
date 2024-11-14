@@ -4,6 +4,8 @@ import hotelmanager.demo.dto.ResponseObject;
 import hotelmanager.demo.dto.auth.AuthLoginDto;
 import hotelmanager.demo.dto.auth.AuthResponse;
 import hotelmanager.demo.dto.roomDtos.*;
+import hotelmanager.demo.models.UserEntity;
+import hotelmanager.demo.security.CustomUserDetails;
 import hotelmanager.demo.services.rooms.ConsumableService;
 import hotelmanager.demo.services.rooms.EquipmentService;
 import hotelmanager.demo.services.rooms.RoomService;
@@ -11,7 +13,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
 
@@ -24,11 +28,12 @@ public class RoomController {
     private final RoomService roomService;
 
     @PostMapping("consumable-category")
-    public ResponseEntity<ResponseObject> createConsumableCatrgory(
-            @RequestBody @Valid ConsumableCategoryDto consumableCategoryDto
+    public ResponseEntity<ResponseObject> createConsumableCategory(
+            @RequestBody @Valid ConsumableCategoryDto consumableCategoryDto,
+            @AuthenticationPrincipal CustomUserDetails user
     ) {
 
-        ConsumableCategoryDto categoryDto = consumableService.createConsumableCategory(consumableCategoryDto);
+        ConsumableCategoryDto categoryDto = consumableService.createConsumableCategory(consumableCategoryDto, user.getUser().getHotelId());
 
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(categoryDto)
@@ -39,10 +44,11 @@ public class RoomController {
 
     @PostMapping("consumable")
     public ResponseEntity<ResponseObject> createConsumable(
-            @RequestBody @Valid ConsumableDto consumableDto
+            @RequestBody @Valid ConsumableDto consumableDto,
+            @AuthenticationPrincipal CustomUserDetails user
     ) {
 
-        ConsumableDto consumableDtoN = consumableService.createConsumable(consumableDto);
+        ConsumableDto consumableDtoN = consumableService.createConsumable(consumableDto, user.getUser().getHotelId());
 
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(consumableDtoN)
@@ -52,10 +58,11 @@ public class RoomController {
     }
     @PostMapping("consumable-list")
     public ResponseEntity<ResponseObject> createConsumable(
-            @RequestBody @Valid List<ConsumableDto> consumableDtos
+            @RequestBody @Valid List<ConsumableDto> consumableDtos,
+            @AuthenticationPrincipal CustomUserDetails user
     ) {
 
-        List<ConsumableDto> consumableDtoN = consumableService.createConsumableList(consumableDtos);
+        List<ConsumableDto> consumableDtoN = consumableService.createConsumableList(consumableDtos, user.getUser().getHotelId());
 
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(consumableDtoN)
@@ -65,9 +72,10 @@ public class RoomController {
     }
     @PutMapping("consumable")
     public ResponseEntity<ResponseObject> updateConsumable(
-            @RequestBody @Valid ConsumableDto consumableDto
+            @RequestBody @Valid ConsumableDto consumableDto,
+            @AuthenticationPrincipal CustomUserDetails user
     ) {
-        ConsumableDto updatedConsumable = consumableService.updateConsumable(consumableDto);
+        ConsumableDto updatedConsumable = consumableService.updateConsumable(consumableDto, user.getUser().getHotelId());
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(updatedConsumable)
                 .message("Consumable updated successfully")
@@ -76,8 +84,10 @@ public class RoomController {
     }
 
     @GetMapping("consumable-category")
-    public ResponseEntity<ResponseObject> getAllConsumableCategories() {
-        List<ConsumableCategoryDto> consumableCategories = consumableService.getAllConsumableCategories();
+    public ResponseEntity<ResponseObject> getAllConsumableCategories(
+            @AuthenticationPrincipal CustomUserDetails user
+    ) {
+        List<ConsumableCategoryDto> consumableCategories = consumableService.getAllConsumableCategories(user.getUser().getHotelId());
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(consumableCategories)
                 .message("Fetched all consumable categories")
@@ -86,8 +96,10 @@ public class RoomController {
     }
 
     @GetMapping("consumable")
-    public ResponseEntity<ResponseObject> getAllConsumables() {
-        List<ConsumableDto> consumables = consumableService.getAllConsumables();
+    public ResponseEntity<ResponseObject> getAllConsumables(
+            @AuthenticationPrincipal CustomUserDetails user
+    ) {
+        List<ConsumableDto> consumables = consumableService.getAllConsumables(user.getUser().getHotelId());
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(consumables)
                 .message("Fetched all consumables")
@@ -136,11 +148,12 @@ public class RoomController {
     }
 
     @PostMapping("equipment-category")
-    public ResponseEntity<ResponseObject> createEquipmentCatrgory(
-            @RequestBody @Valid EquipmentCategoryDto equipmentCategoryDto
+    public ResponseEntity<ResponseObject> createEquipmentCategory(
+            @RequestBody @Valid EquipmentCategoryDto equipmentCategoryDto,
+            @AuthenticationPrincipal CustomUserDetails user
     ) {
 
-        EquipmentCategoryDto equipmentCategoryDto1 = equipmentService.createEquipmentCategory(equipmentCategoryDto);
+        EquipmentCategoryDto equipmentCategoryDto1 = equipmentService.createEquipmentCategory(equipmentCategoryDto, user.getUser().getHotelId());
 
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(equipmentCategoryDto1)
@@ -151,10 +164,11 @@ public class RoomController {
 
     @PostMapping("equipment")
     public ResponseEntity<ResponseObject> createEquipment(
-            @RequestBody @Valid EquipmentDto equipmentDto
+            @RequestBody @Valid EquipmentDto equipmentDto,
+            @AuthenticationPrincipal CustomUserDetails user
     ) {
 
-        EquipmentDto equipmentDto1 = equipmentService.createEquipment(equipmentDto);
+        EquipmentDto equipmentDto1 = equipmentService.createEquipment(equipmentDto, user.getUser().getHotelId());
 
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(equipmentDto1)
@@ -164,10 +178,11 @@ public class RoomController {
     }
     @PostMapping("equipment-list")
     public ResponseEntity<ResponseObject> createEquipmentList(
-            @RequestBody @Valid List<EquipmentDto> equipmentDtos
+            @RequestBody @Valid List<EquipmentDto> equipmentDtos,
+            @AuthenticationPrincipal CustomUserDetails user
     ) {
 
-        List<EquipmentDto> equipmentDtos1 = equipmentService.createEquipmentList(equipmentDtos);
+        List<EquipmentDto> equipmentDtos1 = equipmentService.createEquipmentList(equipmentDtos, user.getUser().getHotelId());
 
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(equipmentDtos1)
@@ -177,9 +192,10 @@ public class RoomController {
     }
     @PutMapping("equipment")
     public ResponseEntity<ResponseObject> updateEquipment(
-            @RequestBody @Valid EquipmentDto equipmentDto
+            @RequestBody @Valid EquipmentDto equipmentDto,
+            @AuthenticationPrincipal CustomUserDetails user
     ) {
-        EquipmentDto updatedEquipment = equipmentService.updateEquipment(equipmentDto);
+        EquipmentDto updatedEquipment = equipmentService.updateEquipment(equipmentDto, user.getUser().getHotelId());
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(updatedEquipment)
                 .message("Equipment updated successfully")
@@ -197,10 +213,11 @@ public class RoomController {
                 .build());
     }
     @PostMapping("roomtype")
-    public ResponseEntity<ResponseObject> createConsumable(
-            @RequestBody @Valid RoomTypeDto roomTypeDto
+    public ResponseEntity<ResponseObject> createRoomType(
+            @RequestBody @Valid RoomTypeDto roomTypeDto,
+            @AuthenticationPrincipal CustomUserDetails user
     ) {
-        RoomTypeDto roomTypeDto1 = roomService.createRoomType(roomTypeDto);
+        RoomTypeDto roomTypeDto1 = roomService.createRoomType(roomTypeDto, user.getUser().getHotelId());
 
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(roomTypeDto1)
@@ -209,8 +226,10 @@ public class RoomController {
                 .build());
     }
     @GetMapping("roomtype")
-    public ResponseEntity<ResponseObject> getAllRoomType() {
-        List<RoomTypeDto> roomTypeDtos = roomService.getAllRoomTypes();
+    public ResponseEntity<ResponseObject> getAllRoomType(
+            @AuthenticationPrincipal CustomUserDetails user
+    ) {
+        List<RoomTypeDto> roomTypeDtos = roomService.getAllRoomTypes(user.getUser().getHotelId());
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(roomTypeDtos)
                 .message("Fetched all roomtype")
@@ -219,10 +238,11 @@ public class RoomController {
     }
 
     @PostMapping("create")
-    public ResponseEntity<ResponseObject> createConsumable(
-            @RequestBody @Valid RoomDto roomDto
+    public ResponseEntity<ResponseObject> createRoom(
+            @RequestBody @Valid RoomDto roomDto,
+            @AuthenticationPrincipal CustomUserDetails user
     ) {
-        RoomDto roomDto1 = roomService.createRoom(roomDto);
+        RoomDto roomDto1 = roomService.createRoom(roomDto, user.getUser().getHotelId());
 
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(roomDto1)
@@ -232,9 +252,10 @@ public class RoomController {
     }
     @PutMapping("update")
     public ResponseEntity<ResponseObject> updateRoom(
-            @RequestBody @Valid RoomDto roomDto
+            @RequestBody @Valid RoomDto roomDto,
+            @AuthenticationPrincipal CustomUserDetails user
     ) {
-        RoomDto roomDto1 = roomService.updateRoom(roomDto);
+        RoomDto roomDto1 = roomService.updateRoom(roomDto, user.getUser().getHotelId());
 
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(roomDto1)
@@ -243,11 +264,11 @@ public class RoomController {
                 .build());
     }
     @GetMapping("getall")
-    public ResponseEntity<ResponseObject> getAllRoom() {
-        List<RoomDto> roomDtos = roomService.getAllRooms();
+    public ResponseEntity<ResponseObject> getAllRoom(@AuthenticationPrincipal CustomUserDetails user) {
+        List<RoomDto> roomDtos = roomService.getAllRooms(user.getUser().getHotelId());
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(roomDtos)
-                .message("Fetched all room")
+                .message("Fetched all rooms for hotel")
                 .responseCode(HttpStatus.OK.value())
                 .build());
     }
@@ -261,8 +282,10 @@ public class RoomController {
                 .build());
     }
     @GetMapping("equipment-category")
-    public ResponseEntity<ResponseObject> getAllEquipmentCategories() {
-        List<EquipmentCategoryDto> equipmentCategories = equipmentService.getAllEquipmentCategories();
+    public ResponseEntity<ResponseObject> getAllEquipmentCategories(
+            @AuthenticationPrincipal CustomUserDetails user
+    ) {
+        List<EquipmentCategoryDto> equipmentCategories = equipmentService.getAllEquipmentCategories(user.getUser().getHotelId());
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(equipmentCategories)
                 .message("Fetched all equipment categories")
@@ -272,8 +295,10 @@ public class RoomController {
     @GetMapping("available")
     public ResponseEntity<ResponseObject> getAvailableRooms(
             @RequestParam Long checkInDate,
-            @RequestParam Long checkOutDate) {
-        List<RoomDto> roomDtos = roomService.getAvailableRooms(checkInDate, checkOutDate);
+            @RequestParam Long checkOutDate,
+            @AuthenticationPrincipal CustomUserDetails user
+    ) {
+        List<RoomDto> roomDtos = roomService.getAvailableRooms(checkInDate, checkOutDate, user.getUser().getHotelId());
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(roomDtos)
                 .message("Fetched available rooms")
@@ -281,8 +306,10 @@ public class RoomController {
                 .build());
     }
     @GetMapping("equipment")
-    public ResponseEntity<ResponseObject> getAllEquipment() {
-        List<EquipmentDto> equipmentList = equipmentService.getAllEquipment();
+    public ResponseEntity<ResponseObject> getAllEquipment(
+            @AuthenticationPrincipal CustomUserDetails user
+    ) {
+        List<EquipmentDto> equipmentList = equipmentService.getAllEquipment(user.getUser().getHotelId());
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(equipmentList)
                 .message("Fetched all equipment")

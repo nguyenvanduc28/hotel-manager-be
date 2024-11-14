@@ -30,8 +30,8 @@ public class InvoiceService {
     private final ModelMapper modelMapper = new ModelMapper();
 
     @Transactional(readOnly = true)
-    public List<InvoiceDto> getAllInvoices() {
-        List<IInvoiceDto> invoices = invoiceRepository.findAllInvoiceDtos();
+    public List<InvoiceDto> getAllInvoices(Integer hotelId) {
+        List<IInvoiceDto> invoices = invoiceRepository.findAllInvoiceDtos(hotelId);
         return convertToInvoiceDtoList(invoices);
     }
 
@@ -57,12 +57,12 @@ public class InvoiceService {
     }
 
     @Transactional
-    public InvoiceDto createInvoice(BookingDto bookingDto) {
+    public InvoiceDto createInvoice(BookingDto bookingDto, Integer hotelId) {
         if (isInvoiceExistsByBookingId(bookingDto.getId())) {
             throw new RuntimeException("Booking đã được thanh toán");
         }
         validateBooking(bookingDto);
-        Invoice invoice = createInvoiceFromBooking(bookingDto);
+        Invoice invoice = createInvoiceFromBooking(bookingDto, hotelId);
         Long issueDate = Instant.now().getEpochSecond();
         invoice.setIssueDate(issueDate);
         Invoice savedInvoice = invoiceRepository.save(invoice);
@@ -82,12 +82,13 @@ public class InvoiceService {
         }
     }
 
-    private Invoice createInvoiceFromBooking(BookingDto bookingDto) {
+    private Invoice createInvoiceFromBooking(BookingDto bookingDto, Integer hotelId) {
         Invoice invoice = new Invoice();
         invoice.setBookingId(bookingDto.getId());
         invoice.setCustomerId(bookingDto.getCustomer().getId());
         invoice.setTotalAmount(calculateTotalAmount(bookingDto));
         invoice.setPaymentStatus("PAID");
+        invoice.setHotelId(hotelId);
         return invoice;
     }
 

@@ -1,11 +1,13 @@
 package hotelmanager.demo.controllers;
 
 import hotelmanager.demo.models.Image;
+import hotelmanager.demo.security.CustomUserDetails;
 import hotelmanager.demo.services.bookings.ImageService;
 import hotelmanager.demo.dto.ResponseObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,9 +32,9 @@ public class ImageController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<ResponseObject> uploadImage(@RequestBody MultipartFile file) {
+    public ResponseEntity<ResponseObject> uploadImage(@RequestBody MultipartFile file, @AuthenticationPrincipal CustomUserDetails user) {
         try {
-            Image uploadedImage = imageService.uploadImage(file);
+            Image uploadedImage = imageService.uploadImage(file, user.getUser().getHotelId());
             return ResponseEntity.ok(ResponseObject.builder()
                     .data(uploadedImage)
                     .message("Image uploaded successfully")
@@ -47,8 +49,8 @@ public class ImageController {
     }
 
     @PostMapping("/upload/multiple")
-    public ResponseEntity<ResponseObject> uploadMultipleImages(@RequestBody List<MultipartFile> files) {
-        List<Image> uploadedImages = imageService.uploadMultipleImages(files);
+    public ResponseEntity<ResponseObject> uploadMultipleImages(@RequestBody List<MultipartFile> files, @AuthenticationPrincipal CustomUserDetails user) {
+        List<Image> uploadedImages = imageService.uploadMultipleImages(files, user.getUser().getHotelId());
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(uploadedImages)
                 .message("Multiple images uploaded successfully")

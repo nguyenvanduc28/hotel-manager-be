@@ -2,11 +2,13 @@ package hotelmanager.demo.controllers;
 
 import hotelmanager.demo.dto.ResponseObject;
 import hotelmanager.demo.dto.bookingDtos.CustomerDto;
+import hotelmanager.demo.security.CustomUserDetails;
 import hotelmanager.demo.services.bookings.CustomerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,9 +21,10 @@ public class CustomerController {
 
     @PostMapping("create")
     public ResponseEntity<ResponseObject> createCustomer(
-            @RequestBody @Valid CustomerDto customerDto
+            @RequestBody @Valid CustomerDto customerDto,
+            @AuthenticationPrincipal CustomUserDetails user
     ) {
-        CustomerDto createdCustomer = customerService.createCustomer(customerDto);
+        CustomerDto createdCustomer = customerService.createCustomer(customerDto, user.getUser().getHotelId());
 
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(createdCustomer)
@@ -31,8 +34,8 @@ public class CustomerController {
     }
 
     @GetMapping("getall")
-    public ResponseEntity<ResponseObject> getAllCustomers() {
-        List<CustomerDto> customerList = customerService.getAllCustomers();
+    public ResponseEntity<ResponseObject> getAllCustomers(@AuthenticationPrincipal CustomUserDetails user) {
+        List<CustomerDto> customerList = customerService.getAllCustomers(user.getUser().getHotelId());
 
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(customerList)
@@ -41,8 +44,8 @@ public class CustomerController {
                 .build());
     }
     @GetMapping("search")
-    public ResponseEntity<ResponseObject> searchCustomersByName(@RequestParam String name) {
-        List<CustomerDto> customerList = customerService.searchCustomersByNameOrPhoneNumber(name);
+    public ResponseEntity<ResponseObject> searchCustomersByName(@RequestParam String name, @AuthenticationPrincipal CustomUserDetails user) {
+        List<CustomerDto> customerList = customerService.searchCustomersByNameOrPhoneNumber(name, user.getUser().getHotelId());
 
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(customerList)

@@ -4,6 +4,7 @@ import hotelmanager.demo.exceptions.NotFoundException;
 import hotelmanager.demo.models.Role;
 import hotelmanager.demo.models.UserEntity;
 import hotelmanager.demo.repositories.UserRepository;
+import hotelmanager.demo.security.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -32,7 +33,8 @@ public class CustomerUserDetailsService implements UserDetailsService {
                 .orElseThrow(
                         () -> new NotFoundException("User " + username + " not found"));
 
-        return new User(userEntity.getUsername(), userEntity.getPassword(), mapRolesToAuthorities(userEntity.getRoles()));
+//        return new User(userEntity.getUsername(), userEntity.getPassword(), mapRolesToAuthorities(userEntity.getRoles()));
+        return new CustomUserDetails(userEntity, mapRolesToAuthorities(userEntity.getRoles()));
     }
 
     private Collection<GrantedAuthority> mapRolesToAuthorities(List<Role> roles) {

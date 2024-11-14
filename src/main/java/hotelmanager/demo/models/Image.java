@@ -12,6 +12,7 @@ public class Image extends BaseEntity {
     private String type;
     private Long size;
     private Integer roomId;
+    private Integer hotelId;
     private String publicId;
     private String fileName;
     private String description;

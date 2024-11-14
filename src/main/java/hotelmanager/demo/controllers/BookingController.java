@@ -8,12 +8,14 @@ import hotelmanager.demo.dto.bookingDtos.CustomerDto;
 import hotelmanager.demo.dto.roomDtos.RoomDto;
 import hotelmanager.demo.models.BookingConsumables;
 import hotelmanager.demo.models.BookingEquipmentDamaged;
+import hotelmanager.demo.security.CustomUserDetails;
 import hotelmanager.demo.services.bookings.BookingService;
 import hotelmanager.demo.services.bookings.CustomerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,8 +26,8 @@ import java.util.List;
 public class BookingController {
     private final BookingService bookingService;
     @GetMapping("getall")
-    public ResponseEntity<ResponseObject> getAllBookings() {
-        List<BookingDto> bookingDtos = bookingService.getSortedBookings();
+    public ResponseEntity<ResponseObject> getAllBookings(@AuthenticationPrincipal CustomUserDetails user) {
+        List<BookingDto> bookingDtos = bookingService.getSortedBookings(user.getUser().getHotelId());
 
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(bookingDtos)
@@ -35,9 +37,10 @@ public class BookingController {
     }
     @PostMapping("create")
     public ResponseEntity<ResponseObject> createBooking(
-            @RequestBody @Valid BookingDto bookingDto
+            @RequestBody @Valid BookingDto bookingDto,
+            @AuthenticationPrincipal CustomUserDetails user
     ) {
-        BookingDto bookingDto1 = bookingService.createBooking(bookingDto);
+        BookingDto bookingDto1 = bookingService.createBooking(bookingDto, user.getUser().getHotelId());
 
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(bookingDto1)
@@ -46,8 +49,8 @@ public class BookingController {
                 .build());
     }
     @GetMapping("search")
-    public ResponseEntity<ResponseObject> getBookingByStatus(@RequestParam String status) {
-        List<BookingDto> bookingDto1 = bookingService.getAllBookingByStatus(status);
+    public ResponseEntity<ResponseObject> getBookingByStatus(@RequestParam String status, @AuthenticationPrincipal CustomUserDetails user) {
+        List<BookingDto> bookingDto1 = bookingService.getAllBookingByStatus(status, user.getUser().getHotelId());
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(bookingDto1)
                 .message("Fetched all booking by status")
@@ -56,8 +59,8 @@ public class BookingController {
     }
 
     @GetMapping("search-cusname")
-    public ResponseEntity<ResponseObject> getBookingByCusName(@RequestParam String customerName) {
-        List<BookingDto> bookingDto1 = bookingService.getAllBookingByCusNam(customerName);
+    public ResponseEntity<ResponseObject> getBookingByCusName(@RequestParam String customerName, @AuthenticationPrincipal CustomUserDetails user) {
+        List<BookingDto> bookingDto1 = bookingService.getAllBookingByCusName(customerName, user.getUser().getHotelId());
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(bookingDto1)
                 .message("Fetched all booking by customerName")

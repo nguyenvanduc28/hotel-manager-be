@@ -29,7 +29,7 @@ public class ImageService {
         return imageRepository.findAllImagesByRoomId(roomId);
     }
     
-    public Image uploadImage(MultipartFile file) throws IOException {
+    public Image uploadImage(MultipartFile file, Integer hotelId) throws IOException {
         try {
             // Upload to Cloudinary
             Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
@@ -45,7 +45,7 @@ public class ImageService {
             image.setType(file.getContentType());
             image.setSize(file.getSize());
             image.setFileName(file.getOriginalFilename());
-            
+            image.setHotelId(hotelId);
             // Save to database
             return imageRepository.save(image);
         } catch (IOException e) {
@@ -54,11 +54,11 @@ public class ImageService {
         }
     }
 
-    public List<Image> uploadMultipleImages(List<MultipartFile> files) {
+    public List<Image> uploadMultipleImages(List<MultipartFile> files, Integer hotelId) {
         return files.stream()
                 .map(file -> {
                     try {
-                        return uploadImage(file);
+                        return uploadImage(file, hotelId);
                     } catch (IOException e) {
                         log.error("Error uploading image: ", e);
                         return null;

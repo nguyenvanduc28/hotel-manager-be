@@ -19,9 +19,10 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
                    i.issue_date AS issueDate,
                    i.payment_status AS paymentStatus
             FROM invoice i
+            WHERE i.hotel_id = :hotelId AND i.deleted = false
             ORDER BY i.issue_date DESC
             """, nativeQuery = true)
-    List<IInvoiceDto> findAllInvoiceDtos();
+    List<IInvoiceDto> findAllInvoiceDtos(@Param("hotelId") Integer hotelId);
 
     @Query(value = """
             SELECT i.id AS id,
@@ -32,7 +33,7 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
                    i.issue_date AS issueDate,
                    i.payment_status AS paymentStatus
             FROM invoice i
-            WHERE i.id = :invoiceId
+            WHERE i.id = :invoiceId AND i.deleted = false
             """, nativeQuery = true)
     IInvoiceDto findInvoiceDtoById(@Param("invoiceId") Integer invoiceId);
 
@@ -45,7 +46,7 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
                    i.issue_date AS issueDate,
                    i.payment_status AS paymentStatus
             FROM invoice i
-            WHERE i.customer_id = :customerId
+            WHERE i.customer_id = :customerId AND i.deleted = false
             ORDER BY i.issue_date DESC
             """, nativeQuery = true)
     List<IInvoiceDto> findInvoiceDtosByCustomerId(@Param("customerId") Integer customerId);
@@ -59,14 +60,14 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
                    i.issue_date AS issueDate,
                    i.payment_status AS paymentStatus
             FROM invoice i
-            WHERE i.booking_id = :bookingId
+            WHERE i.booking_id = :bookingId AND i.deleted = false
             """, nativeQuery = true)
     IInvoiceDto findInvoiceDtoByBookingId(@Param("bookingId") Integer bookingId);
 
     @Query(value = """
             SELECT COUNT(i.booking_id)
             FROM invoice i
-            WHERE i.booking_id = :bookingId
+            WHERE i.booking_id = :bookingId AND i.deleted = false
             """, nativeQuery = true)
     Integer countByBookingId(@Param("bookingId") Integer bookingId);
 

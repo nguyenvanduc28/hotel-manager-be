@@ -32,6 +32,7 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
                    b.number_of_children AS numberOfChildren,
                    b.is_guaranteed AS isGuaranteed
             FROM bookings b
+            WHERE b.hotel_id = :hotelId AND b.deleted = false
             ORDER BY 
                 CASE b.status 
                     WHEN 'Đã nhận phòng' THEN 1
@@ -47,14 +48,14 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
                 END,
                 COALESCE(b.check_in_date, b.booking_date) ASC
             """, nativeQuery = true)
-    List<IBookingDto> findAllBookingsSortedByStatusAndDate();
+    List<IBookingDto> findAllBookingsSortedByStatusAndDate(@Param("hotelId") Integer hotelId);
 
     @Query(value = """
             SELECT * FROM bookings b
-            WHERE (:status IS NULL OR b.status = :status)
+            WHERE (:status IS NULL OR b.status = :status) AND b.hotel_id = :hotelId AND b.deleted = false
             ORDER BY COALESCE(b.check_in_date, b.booking_date) ASC
             """, nativeQuery = true)
-    List<Booking> searchByStatus(@Param("status") String status);
+    List<Booking> searchByStatus(@Param("status") String status, @Param("hotelId") Integer hotelId);
 
     @Query(value = """
             SELECT b.id AS id, 
@@ -75,10 +76,10 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
                    b.is_guaranteed AS isGuaranteed
             FROM bookings b
             LEFT JOIN customers c ON b.customer_id = c.id
-            WHERE c.name LIKE %:customerName%
+            WHERE c.name LIKE %:customerName% AND b.hotel_id = :hotelId AND b.deleted = false
             ORDER BY COALESCE(b.check_in_date, b.booking_date) ASC
             """, nativeQuery = true)
-    List<IBookingDto> searchByCustomerName(@Param("customerName") String customerName);
+    List<IBookingDto> searchByCustomerName(@Param("customerName") String customerName, @Param("hotelId") Integer hotelId);
 
     @Transactional
     @Modifying
@@ -140,8 +141,11 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
                    b.number_of_children AS numberOfChildren,
                    b.is_guaranteed AS isGuaranteed
             FROM bookings b
+            WHERE b.hotel_id = :hotelId AND b.deleted = false
             """, nativeQuery = true)
-    List<IBookingDto> findAllBookingDtos();
+    List<IBookingDto> findAllBookingDtos(@Param("hotelId") Integer hotelId);
+
+    List<Booking> findAllBookingsByHotelId(@Param("hotelId") Integer hotelId);
 
     @Query(value = """
             SELECT DISTINCT r.id AS id,

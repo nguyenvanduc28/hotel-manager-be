@@ -20,7 +20,7 @@ public class CustomerService {
     private ModelMapper modelMapper = new ModelMapper();
 
     @Transactional
-    public CustomerDto createCustomer(CustomerDto customerDto) {
+    public CustomerDto createCustomer(CustomerDto customerDto, Integer hotelId) {
         Customer customer = new Customer();
         customer.setName(customerDto.getName());
         customer.setEmail(customerDto.getEmail());
@@ -31,14 +31,14 @@ public class CustomerService {
         customer.setIdentityNumber(customerDto.getIdentityNumber());
         customer.setAddress(customerDto.getAddress());
         customer.setNotes(customerDto.getNotes());
-
+        customer.setHotelId(hotelId);
         Customer savedCustomer = customerRepository.save(customer);
         return modelMapper.map(savedCustomer, CustomerDto.class);
     }
 
     @Transactional(readOnly = true)
-    public List<CustomerDto> getAllCustomers() {
-        List<Customer> customers = customerRepository.findAll();
+    public List<CustomerDto> getAllCustomers(Integer hotelId) {
+        List<Customer> customers = customerRepository.findAllCustomersByHotelIdAndDeletedFalse(hotelId);
         List<CustomerDto> customerDtos = new ArrayList<>();
 
         for (Customer customer : customers) {
@@ -49,11 +49,11 @@ public class CustomerService {
         return customerDtos;
     }
     @Transactional(readOnly = true)
-    public List<CustomerDto> searchCustomersByNameOrPhoneNumber(String name) {
+    public List<CustomerDto> searchCustomersByNameOrPhoneNumber(String name, Integer hotelId) {
         if (name == null || name.trim().isEmpty()) {
-            return getAllCustomers();
+            return getAllCustomers(hotelId);
         }
-        List<Customer> customers = customerRepository.findAllCustomersByNameOrPhoneCus(name);
+        List<Customer> customers = customerRepository.findAllCustomersByNameOrPhoneCus(name, hotelId);
         return List.of(modelMapper.map(customers, CustomerDto[].class));
     }
 
