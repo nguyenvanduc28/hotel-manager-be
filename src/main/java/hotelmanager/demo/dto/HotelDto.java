@@ -29,4 +29,21 @@ public class HotelDto extends BaseDto{
     private String status; // Trạng thái
     private String address; // Địa chỉ
     private List<ImageDto> images;
+    //tiện ích
+    private Boolean isSmokingAllowed;
+
+    private Boolean hasPrivateKitchen;
+    private Boolean hasPrivateBathroom;
+    private Boolean hasBalcony;
+    private Boolean hasLakeView;
+    private Boolean hasGardenView;
+    private Boolean hasPoolView;
+    private Boolean hasMountainView;
+    private Boolean hasLandmarkView;
+    private Boolean hasCityView;
+    private Boolean hasRiverView;
+    private Boolean hasCourtyardView;
+    private Boolean hasFreeWifi;
+    private Boolean hasSoundproofing;
+
 }

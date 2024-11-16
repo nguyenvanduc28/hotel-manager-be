@@ -1,4 +1,5 @@
 package hotelmanager.demo.models;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,4 +27,34 @@ public class Hotel extends BaseEntity{
     private String ownerName; // Tên chủ sở hữu
     private String status; // Trạng thái
     private String address; // Địa chỉ
+
+    // tiện ích
+    @Column(columnDefinition = "boolean default false")
+    private Boolean isSmokingAllowed;
+    @Column(columnDefinition = "boolean default false")
+    private Boolean hasPrivateKitchen;
+    @Column(columnDefinition = "boolean default false")
+    private Boolean hasPrivateBathroom;
+    @Column(columnDefinition = "boolean default false")
+    private Boolean hasBalcony;
+    @Column(columnDefinition = "boolean default false")
+    private Boolean hasLakeView;
+    @Column(columnDefinition = "boolean default false")
+    private Boolean hasGardenView;
+    @Column(columnDefinition = "boolean default false")
+    private Boolean hasPoolView;
+    @Column(columnDefinition = "boolean default false")
+    private Boolean hasMountainView;
+    @Column(columnDefinition = "boolean default false")
+    private Boolean hasLandmarkView;
+    @Column(columnDefinition = "boolean default false")
+    private Boolean hasCityView;
+    @Column(columnDefinition = "boolean default false")
+    private Boolean hasRiverView;
+    @Column(columnDefinition = "boolean default false")
+    private Boolean hasCourtyardView;
+    @Column(columnDefinition = "boolean default false")
+    private Boolean hasFreeWifi;
+    @Column(columnDefinition = "boolean default false")
+    private Boolean hasSoundproofing;
 }

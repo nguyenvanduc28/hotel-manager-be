@@ -46,6 +46,22 @@ public class HotelService {
         hotel.setStatus(hotelDto.getStatus());
         hotel.setAddress(hotelDto.getAddress());
 
+        // Add amenities
+        hotel.setIsSmokingAllowed(hotelDto.getIsSmokingAllowed());
+        hotel.setHasPrivateKitchen(hotelDto.getHasPrivateKitchen());
+        hotel.setHasPrivateBathroom(hotelDto.getHasPrivateBathroom());
+        hotel.setHasBalcony(hotelDto.getHasBalcony());
+        hotel.setHasLakeView(hotelDto.getHasLakeView());
+        hotel.setHasGardenView(hotelDto.getHasGardenView());
+        hotel.setHasPoolView(hotelDto.getHasPoolView());
+        hotel.setHasMountainView(hotelDto.getHasMountainView());
+        hotel.setHasLandmarkView(hotelDto.getHasLandmarkView());
+        hotel.setHasCityView(hotelDto.getHasCityView());
+        hotel.setHasRiverView(hotelDto.getHasRiverView());
+        hotel.setHasCourtyardView(hotelDto.getHasCourtyardView());
+        hotel.setHasFreeWifi(hotelDto.getHasFreeWifi());
+        hotel.setHasSoundproofing(hotelDto.getHasSoundproofing());
+
         Hotel savedHotel = hotelRepository.save(hotel);
         return modelMapper.map(savedHotel, HotelDto.class);
     }
@@ -74,6 +90,22 @@ public class HotelService {
         hotel.setOwnerName(hotelDto.getOwnerName());
         hotel.setStatus(hotelDto.getStatus());
         hotel.setAddress(hotelDto.getAddress());
+
+        // Update amenities
+        hotel.setIsSmokingAllowed(hotelDto.getIsSmokingAllowed());
+        hotel.setHasPrivateKitchen(hotelDto.getHasPrivateKitchen());
+        hotel.setHasPrivateBathroom(hotelDto.getHasPrivateBathroom());
+        hotel.setHasBalcony(hotelDto.getHasBalcony());
+        hotel.setHasLakeView(hotelDto.getHasLakeView());
+        hotel.setHasGardenView(hotelDto.getHasGardenView());
+        hotel.setHasPoolView(hotelDto.getHasPoolView());
+        hotel.setHasMountainView(hotelDto.getHasMountainView());
+        hotel.setHasLandmarkView(hotelDto.getHasLandmarkView());
+        hotel.setHasCityView(hotelDto.getHasCityView());
+        hotel.setHasRiverView(hotelDto.getHasRiverView());
+        hotel.setHasCourtyardView(hotelDto.getHasCourtyardView());
+        hotel.setHasFreeWifi(hotelDto.getHasFreeWifi());
+        hotel.setHasSoundproofing(hotelDto.getHasSoundproofing());
 
         // Update images
         imageRepository.findAllImagesByHotelId(hotel.getId())
