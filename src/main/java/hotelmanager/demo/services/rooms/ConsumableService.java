@@ -131,8 +131,8 @@ public class ConsumableService {
     }
 
     @Transactional(readOnly = true)
-    public List<ConsumableDto> getAllConsumablesAvailable(Integer roomId) {
-        List<IConsumableDto> consumableDtos = consumableRepository.findAllConsumablesAvailable(roomId);
+    public List<ConsumableDto> getAllConsumablesAvailable(Integer roomId, Integer hotelId) {
+        List<IConsumableDto> consumableDtos = consumableRepository.findAllConsumablesAvailable(roomId, hotelId);
         List<ConsumableDto> consumableDtos2 = new ArrayList<>();
         for (IConsumableDto iConsumableDto:consumableDtos) {
             ConsumableDto consumableDto = modelMapper.map(iConsumableDto, ConsumableDto.class);

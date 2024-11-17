@@ -19,7 +19,6 @@ public class Room extends BaseEntity{
     @JsonManagedReference
     private RoomType roomType;
 
-    @Column(unique = true)
     private String roomNumber;
 
     private Integer floor;

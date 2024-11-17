@@ -98,6 +98,9 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/admin/hotels/get/{id}").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
                         .requestMatchers(HttpMethod.GET, "/admin/hotels/get-info-hotel").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
 
+                        .requestMatchers(HttpMethod.GET, "/api/search/hotels").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/admin/auth/register-admin").permitAll()
+
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)

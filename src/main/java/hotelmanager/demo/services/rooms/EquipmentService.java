@@ -117,8 +117,8 @@ public class EquipmentService {
         return equipmentDtos1;
     }
     @Transactional(readOnly = true)
-    public List<EquipmentDto> getAllEquipmentAvailable(Integer roomId) {
-        List<IEquipmentDto> equipments = equipmentRepository.findAllEquipmentAvalable(roomId);
+    public List<EquipmentDto> getAllEquipmentAvailable(Integer roomId, Integer hotelId) {
+        List<IEquipmentDto> equipments = equipmentRepository.findAllEquipmentAvalable(roomId, hotelId);
         List<EquipmentDto> equipmentDtos1 = new ArrayList<>();
         for (IEquipmentDto iEquipmentDto : equipments) {
             EquipmentDto equipmentDto = modelMapper.map(iEquipmentDto, EquipmentDto.class);

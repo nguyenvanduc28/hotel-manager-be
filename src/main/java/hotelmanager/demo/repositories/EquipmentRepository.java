@@ -31,8 +31,8 @@ public interface EquipmentRepository extends JpaRepository<Equipment, Integer> {
             "       e.equipment_category_id AS equipmentCategoryId, \n" +
             "       e.installation_date AS installationDate, e.barcode AS barcode, \n" +
             "       e.status AS status, e.description AS description\n" +
-            "FROM equipment e WHERE (e.room_id = :roomId OR e.room_id IS NULL) AND e.deleted = false", nativeQuery = true)
-    List<IEquipmentDto> findAllEquipmentAvalable(@Param("roomId") Integer roomId);
+            "FROM equipment e WHERE (e.room_id = :roomId OR e.room_id IS NULL) AND e.deleted = false AND e.hotel_id = :hotelId", nativeQuery = true)
+    List<IEquipmentDto> findAllEquipmentAvalable(@Param("roomId") Integer roomId, @Param("hotelId") Integer hotelId);
 
     @Query(value = "SELECT e.id AS id, e.name AS name, e.room_id AS roomId, \n" +
             "       e.equipment_category_id AS equipmentCategoryId, \n" +

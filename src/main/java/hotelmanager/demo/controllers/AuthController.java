@@ -46,6 +46,19 @@ public class AuthController {
                         .build());
     }
 
+    @PostMapping("register-admin")
+    public ResponseEntity<ResponseObject> registerAdmin(
+            @RequestBody @Valid AuthDto authDto
+    ) {
+        AuthResponse authResponse = authService.registerAdmin(authDto);
+
+        return ResponseEntity.ok(ResponseObject.builder()
+                        .data(authResponse)
+                        .message("register admin successfully")
+                        .responseCode(HttpStatus.OK.value())
+                        .build());
+    }   
+
     @PostMapping("verify-token")
     public ResponseEntity<ResponseObject> verifyToken(
             @RequestBody @Valid VerifyTokenRequest request

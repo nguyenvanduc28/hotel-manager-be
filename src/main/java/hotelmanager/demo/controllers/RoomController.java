@@ -108,8 +108,8 @@ public class RoomController {
     }
 
     @GetMapping("consumable/available")
-    public ResponseEntity<ResponseObject> getAllConsumablesAvailable(@RequestParam Integer roomId) {
-        List<ConsumableDto> consumables = consumableService.getAllConsumablesAvailable(roomId);
+    public ResponseEntity<ResponseObject> getAllConsumablesAvailable(@RequestParam Integer roomId, @AuthenticationPrincipal CustomUserDetails user) {
+        List<ConsumableDto> consumables = consumableService.getAllConsumablesAvailable(roomId, user.getUser().getHotelId());
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(consumables)
                 .message("Fetched all consumables available of room")
@@ -318,8 +318,8 @@ public class RoomController {
     }
 
     @GetMapping("equipment/available")
-    public ResponseEntity<ResponseObject> getAllEquipmentAvailable(@RequestParam Integer roomId) {
-        List<EquipmentDto> equipmentList = equipmentService.getAllEquipmentAvailable(roomId);
+    public ResponseEntity<ResponseObject> getAllEquipmentAvailable(@RequestParam Integer roomId, @AuthenticationPrincipal CustomUserDetails user) {
+        List<EquipmentDto> equipmentList = equipmentService.getAllEquipmentAvailable(roomId, user.getUser().getHotelId());
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(equipmentList)
                 .message("Fetched all equipment available of room")

@@ -35,8 +35,8 @@ public interface ConsumableRepository extends JpaRepository<Consumable, Integer>
             "       c.price AS price, c.quantity AS quantity, c.unit AS unit, \n" +
             "       c.expiry_date AS expiryDate, c.barcode AS barcode, \n" +
             "       c.description AS description\n" +
-            "FROM consumables c WHERE (c.room_id =:roomId OR c.room_id IS NULL) AND c.deleted = false", nativeQuery = true)
-    List<IConsumableDto> findAllConsumablesAvailable(@Param("roomId") Integer roomId);
+            "FROM consumables c WHERE (c.room_id =:roomId OR c.room_id IS NULL) AND c.deleted = false AND c.hotel_id = :hotelId", nativeQuery = true)
+    List<IConsumableDto> findAllConsumablesAvailable(@Param("roomId") Integer roomId, @Param("hotelId") Integer hotelId);
 
     @Query(value = "SELECT c.id AS id, c.name AS name, c.room_id AS roomId, \n" +
             "       c.consumable_category_id AS consumableCategoryId, \n" +

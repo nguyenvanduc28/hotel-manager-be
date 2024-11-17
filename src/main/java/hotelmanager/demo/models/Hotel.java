@@ -28,33 +28,27 @@ public class Hotel extends BaseEntity{
     private String status; // Trạng thái
     private String address; // Địa chỉ
 
-    // tiện ích
+    // Tiện nghi cơ bản
     @Column(columnDefinition = "boolean default false")
-    private Boolean isSmokingAllowed;
+    private Boolean hasWifi; // Có Wifi
     @Column(columnDefinition = "boolean default false")
-    private Boolean hasPrivateKitchen;
+    private Boolean hasParking; // Có bãi đậu xe
     @Column(columnDefinition = "boolean default false")
-    private Boolean hasPrivateBathroom;
+    private Boolean hasRestaurant; // Có nhà hàng
     @Column(columnDefinition = "boolean default false")
-    private Boolean hasBalcony;
+    private Boolean hasSwimmingPool; // Có hồ bơi
     @Column(columnDefinition = "boolean default false")
-    private Boolean hasLakeView;
+    private Boolean hasConferenceRoom; // Có phòng hội nghị
     @Column(columnDefinition = "boolean default false")
-    private Boolean hasGardenView;
+    private Boolean has24HourFrontDesk; // Có lễ tân 24 giờ
     @Column(columnDefinition = "boolean default false")
-    private Boolean hasPoolView;
+    private Boolean hasBar; // Có quầy bar
     @Column(columnDefinition = "boolean default false")
-    private Boolean hasMountainView;
+    private Boolean hasElevator; // Có thang máy
     @Column(columnDefinition = "boolean default false")
-    private Boolean hasLandmarkView;
+    private Boolean hasAirConditioning; // Có điều hòa
     @Column(columnDefinition = "boolean default false")
-    private Boolean hasCityView;
-    @Column(columnDefinition = "boolean default false")
-    private Boolean hasRiverView;
-    @Column(columnDefinition = "boolean default false")
-    private Boolean hasCourtyardView;
-    @Column(columnDefinition = "boolean default false")
-    private Boolean hasFreeWifi;
-    @Column(columnDefinition = "boolean default false")
-    private Boolean hasSoundproofing;
+    private Boolean hasShuttle; // Có chuyến xe đưa đón
+    
+    private String otherAmenities; // Tiện ích khác
 }

@@ -1,5 +1,6 @@
 package hotelmanager.demo.services.auth;
 
+import hotelmanager.demo.dto.HotelDto;
 import hotelmanager.demo.dto.auth.*;
 import hotelmanager.demo.exceptions.NotFoundException;
 import hotelmanager.demo.exceptions.UnAuthorizedException;
@@ -7,6 +8,7 @@ import hotelmanager.demo.models.Role;
 import hotelmanager.demo.models.UserEntity;
 import hotelmanager.demo.repositories.RoleRepository;
 import hotelmanager.demo.repositories.UserRepository;
+import hotelmanager.demo.services.HotelService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,13 +20,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AuthService {
 
     @Autowired
     private final UserRepository userRepository;
+    @Autowired
+    private final HotelService hotelService;
     @Autowired
     private final RoleRepository roleRepository;
 
@@ -38,10 +41,11 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
 
     public AuthService(UserRepository userRepository,
-                       RoleRepository roleRepository, PasswordEncoder passwordEncoder,
+                       HotelService hotelService, RoleRepository roleRepository, PasswordEncoder passwordEncoder,
                        JwtService jwtService,
                        AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
+        this.hotelService = hotelService;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
@@ -80,6 +84,37 @@ public class AuthService {
         userRepository.save(userEntity);
         var jwtToken = jwtService.generateToken(userEntity.getUsername());
         ModelMapper modelMapper = new ModelMapper();
+        return AuthResponse.builder()
+                .user(modelMapper.map(userEntity, UserInfoDto.class))
+                .token(jwtToken)
+                .build();
+    }
+    @Transactional
+    public AuthResponse registerAdmin(AuthDto authDto) {
+        if (userRepository.findByUsername(authDto.getUsername()).isPresent()) {
+            throw new RuntimeException("User exists");
+        }
+        
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername(authDto.getUsername());
+        userEntity.setPassword(passwordEncoder.encode(authDto.getPassword()));
+        
+        // Get admin role
+        Role adminRole = roleRepository.findByName("ADMIN");
+        
+        List<Role> roles = new ArrayList<>();
+        roles.add(adminRole);
+        userEntity.setRoles(roles);
+        
+        userRepository.save(userEntity);
+
+        HotelDto hotelDto = new HotelDto();
+        hotelService.createHotel(hotelDto);
+
+        
+        var jwtToken = jwtService.generateToken(userEntity.getUsername());
+        ModelMapper modelMapper = new ModelMapper();
+        
         return AuthResponse.builder()
                 .user(modelMapper.map(userEntity, UserInfoDto.class))
                 .token(jwtToken)

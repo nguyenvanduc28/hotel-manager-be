@@ -30,20 +30,17 @@ public class HotelDto extends BaseDto{
     private String address; // Địa chỉ
     private List<ImageDto> images;
     //tiện ích
-    private Boolean isSmokingAllowed;
-
-    private Boolean hasPrivateKitchen;
-    private Boolean hasPrivateBathroom;
-    private Boolean hasBalcony;
-    private Boolean hasLakeView;
-    private Boolean hasGardenView;
-    private Boolean hasPoolView;
-    private Boolean hasMountainView;
-    private Boolean hasLandmarkView;
-    private Boolean hasCityView;
-    private Boolean hasRiverView;
-    private Boolean hasCourtyardView;
-    private Boolean hasFreeWifi;
-    private Boolean hasSoundproofing;
+    private Boolean hasWifi; // Có Wifi
+    private Boolean hasParking; // Có bãi đậu xe
+    private Boolean hasRestaurant; // Có nhà hàng
+    private Boolean hasSwimmingPool; // Có hồ bơi
+    private Boolean hasConferenceRoom; // Có phòng hội nghị
+    private Boolean has24HourFrontDesk; // Có lễ tân 24 giờ
+    private Boolean hasBar; // Có quầy bar
+    private Boolean hasElevator; // Có thang máy
+    private Boolean hasAirConditioning; // Có điều hòa
+    private Boolean hasShuttle; // Có chuyến xe đưa đón
+    
+    private String otherAmenities; // Tiện ích khác
 
 }
