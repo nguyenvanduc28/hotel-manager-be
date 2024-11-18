@@ -64,13 +64,13 @@ public class SecurityConfiguration {
 
                         .requestMatchers(HttpMethod.GET, "/admin/customers/getall").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
                         .requestMatchers(HttpMethod.GET, "/admin/customers/search").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
-                        .requestMatchers(HttpMethod.POST, "/admin/customers/create").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
+                        .requestMatchers(HttpMethod.POST, "/admin/customers/create").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "admin/bookings/getall").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
                         .requestMatchers(HttpMethod.GET, "admin/bookings/{id}").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
                         .requestMatchers(HttpMethod.GET, "admin/bookings/search-cusname").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
                         .requestMatchers(HttpMethod.GET, "admin/bookings/search").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
-                        .requestMatchers(HttpMethod.POST, "admin/bookings/create").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
+                        .requestMatchers(HttpMethod.POST, "admin/bookings/create").permitAll()
                         .requestMatchers(HttpMethod.POST, "admin/bookings/confirm/{id}").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
                         .requestMatchers(HttpMethod.POST, "admin/bookings/checkin/{id}").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
                         .requestMatchers(HttpMethod.POST, "admin/bookings/{bookingId}/consumables").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())

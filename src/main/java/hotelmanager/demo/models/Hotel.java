@@ -21,6 +21,7 @@ public class Hotel extends BaseEntity{
     private Integer numberOfRooms; // Số phòng
     private String checkInTime; // Giờ vào
     private String checkOutTime; // Giờ ra
+    @Column(columnDefinition = "TEXT")
     private String description; // Mô tả
     private String logoUrl; // URL logo
     private Integer totalStaff; // Số nhân sự

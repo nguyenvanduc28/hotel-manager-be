@@ -116,8 +116,11 @@ public class HotelService {
     public HotelDto getHotelById(Integer id) {
         Hotel hotel = hotelRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Không tìm thấy khách sạn với ID: " + id));
-            
-        return modelMapper.map(hotel, HotelDto.class);
+        // Get images
+        List<Image> images = imageRepository.findAllImagesByHotelId(hotel.getId());
+        HotelDto hotelDto = modelMapper.map(hotel, HotelDto.class);
+        hotelDto.setImages(List.of(modelMapper.map(images, ImageDto[].class)));
+        return hotelDto;
     }
 
     public HotelDto getHotelByUserId(Integer userId) {

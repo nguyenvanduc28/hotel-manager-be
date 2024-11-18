@@ -1,5 +1,6 @@
 package hotelmanager.demo.repositories;
 
+import hotelmanager.demo.dto.INumOfHotelSearch;
 import hotelmanager.demo.dto.roomDtos.IRoomDto;
 import hotelmanager.demo.models.Room;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -43,6 +44,20 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
     List<IRoomDto> findAvailableRooms(@Param("checkInDate") Long checkInDate,
                                       @Param("checkOutDate") Long checkOutDate,
                                       @Param("hotelId") Integer hotelId);
+
+    @Query(value = "SELECT COUNT(DISTINCT r.id) AS count, MIN(rt.base_price_per_night) AS lowestPrice\n" +
+            "FROM rooms r\n" +
+            "LEFT JOIN room_types rt ON r.room_type_id = rt.id\n" +
+            "LEFT JOIN booking_rooms br ON r.id = br.room_id\n" +
+            "LEFT JOIN bookings b ON br.booking_id = b.id\n" +
+            "WHERE (b.status IS NULL \n" +
+            "       OR (b.status NOT IN ('Đang chờ', 'Đã xác nhận') \n" +
+            "           OR (b.check_in_date > :checkOutDate OR b.check_out_date < :checkInDate))) AND r.hotel_id = :hotelId AND r.deleted = false",
+            nativeQuery = true)
+    INumOfHotelSearch getAvailableRoomCount(@Param("checkInDate") Long checkInDate,
+                                            @Param("checkOutDate") Long checkOutDate,
+                                            @Param("hotelId") Integer hotelId);
+
     @Query(value = "SELECT DISTINCT r.id AS id,\n" +
             "       r.room_number AS roomNumber,\n" +
             "       r.floor AS floor,\n" +

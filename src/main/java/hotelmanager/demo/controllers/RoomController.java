@@ -296,9 +296,9 @@ public class RoomController {
     public ResponseEntity<ResponseObject> getAvailableRooms(
             @RequestParam Long checkInDate,
             @RequestParam Long checkOutDate,
-            @AuthenticationPrincipal CustomUserDetails user
+            @RequestParam Integer hotelId
     ) {
-        List<RoomDto> roomDtos = roomService.getAvailableRooms(checkInDate, checkOutDate, user.getUser().getHotelId());
+        List<RoomDto> roomDtos = roomService.getAvailableRooms(checkInDate, checkOutDate, hotelId);
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(roomDtos)
                 .message("Fetched available rooms")

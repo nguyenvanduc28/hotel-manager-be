@@ -40,7 +40,13 @@ public class BookingController {
             @RequestBody @Valid BookingDto bookingDto,
             @AuthenticationPrincipal CustomUserDetails user
     ) {
-        BookingDto bookingDto1 = bookingService.createBooking(bookingDto, user.getUser().getHotelId());
+        Integer hotelId = null;
+        if (user != null) {
+            hotelId = user.getUser().getHotelId();
+        } else {
+            hotelId = bookingDto.hotelId;
+        }
+        BookingDto bookingDto1 = bookingService.createBooking(bookingDto, hotelId);
 
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(bookingDto1)

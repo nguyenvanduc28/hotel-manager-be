@@ -1,7 +1,6 @@
 package hotelmanager.demo.dto;
 
 import hotelmanager.demo.dto.bookingDtos.ImageDto;
-import hotelmanager.demo.dto.roomDtos.RoomDto;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,9 +14,8 @@ public class HotelSearchResultDto {
     private String description;
     private Integer rating;
     private List<ImageDto> images;
-    private List<RoomDto> availableRooms;
+    private int availableRoomCount;
     private double lowestPrice;
-    // Thêm các trường khác nếu cần
     private Boolean hasWifi;
     private Boolean hasParking;
     private Boolean hasRestaurant; 

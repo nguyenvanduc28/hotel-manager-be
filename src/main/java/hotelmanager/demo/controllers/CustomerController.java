@@ -24,7 +24,13 @@ public class CustomerController {
             @RequestBody @Valid CustomerDto customerDto,
             @AuthenticationPrincipal CustomUserDetails user
     ) {
-        CustomerDto createdCustomer = customerService.createCustomer(customerDto, user.getUser().getHotelId());
+        Integer hotelId = null; 
+        if (user != null) {
+            hotelId = user.getUser().getHotelId();
+        } else {
+            hotelId = customerDto.hotelId;
+        }
+        CustomerDto createdCustomer = customerService.createCustomer(customerDto, hotelId);
 
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(createdCustomer)
