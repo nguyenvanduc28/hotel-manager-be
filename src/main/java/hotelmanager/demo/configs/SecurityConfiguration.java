@@ -58,9 +58,9 @@ public class SecurityConfiguration {
 
                         .requestMatchers(HttpMethod.GET, "/admin/rooms/getall").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
                         .requestMatchers(HttpMethod.GET, "/admin/rooms/{id}").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
-                        .requestMatchers(HttpMethod.GET, "/admin/rooms/available").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
                         .requestMatchers(HttpMethod.POST, "/admin/rooms/create").hasAnyAuthority(RoleType.ADMIN.name())
                         .requestMatchers(HttpMethod.PUT, "/admin/rooms/update").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
+                        .requestMatchers(HttpMethod.GET,"/admin/rooms/available").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/admin/customers/getall").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
                         .requestMatchers(HttpMethod.GET, "/admin/customers/search").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
@@ -95,7 +95,7 @@ public class SecurityConfiguration {
 
                         .requestMatchers(HttpMethod.POST, "/admin/hotels/create").hasAnyAuthority(RoleType.ADMIN.name())
                         .requestMatchers(HttpMethod.PUT, "/admin/hotels/update/{id}").hasAnyAuthority(RoleType.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET, "/admin/hotels/get/{id}").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
+                        .requestMatchers(HttpMethod.GET, "/admin/hotels/get/{id}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/admin/hotels/get-info-hotel").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
 
                         .requestMatchers(HttpMethod.GET, "/api/search/hotels").permitAll()
