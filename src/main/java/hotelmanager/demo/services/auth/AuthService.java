@@ -106,11 +106,12 @@ public class AuthService {
         roles.add(adminRole);
         userEntity.setRoles(roles);
         
-        userRepository.save(userEntity);
+
 
         HotelDto hotelDto = new HotelDto();
-        hotelService.createHotel(hotelDto);
-
+        HotelDto hotelDto1 = hotelService.createHotel(hotelDto);
+        userEntity.setHotelId(hotelDto1.getId());
+        userRepository.save(userEntity);
         
         var jwtToken = jwtService.generateToken(userEntity.getUsername());
         ModelMapper modelMapper = new ModelMapper();
@@ -120,6 +121,29 @@ public class AuthService {
                 .token(jwtToken)
                 .build();
     }
+
+    @Transactional
+    public UserEntity createUser(AuthDto authDto, int hotelId) {
+        if (userRepository.findByUsername(authDto.getUsername()).isPresent()) {
+            throw new RuntimeException("User already exists");
+        }
+        
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername(authDto.getUsername());
+        userEntity.setPassword(passwordEncoder.encode(authDto.getPassword()));
+        userEntity.setHotelId(hotelId);
+        
+        List<Role> roles = new ArrayList<>();
+        for (RoleDto roleDto: authDto.getRoles()) {
+            Role role = roleRepository.findById(roleDto.getId())
+                    .orElseThrow(() -> new NotFoundException("Role not found: " + roleDto.getName()));
+            roles.add(role);
+        }
+        userEntity.setRoles(roles);
+        
+        return userRepository.save(userEntity);
+    }
+    
 
     public UserInfoDto verifyToken(VerifyTokenRequest request) {
         String username = jwtService.extractUsername(request.getToken());

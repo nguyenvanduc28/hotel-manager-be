@@ -64,9 +64,9 @@ public class HotelService {
     }
 
     @Transactional
-    public HotelDto updateHotel(Integer id, HotelDto hotelDto) {
-        Hotel hotel = hotelRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException("Không tìm thấy khách sạn với ID: " + id));
+    public HotelDto updateHotel(Integer hotelId, HotelDto hotelDto) {
+        Hotel hotel = hotelRepository.findById(hotelId)
+            .orElseThrow(() -> new NotFoundException("Không tìm thấy khách sạn với ID: " + hotelId));
 
         hotel.setName(hotelDto.getName());
         hotel.setRating(hotelDto.getRating());

@@ -292,19 +292,6 @@ public class RoomController {
                 .responseCode(HttpStatus.OK.value())
                 .build());
     }
-    @GetMapping("available")
-    public ResponseEntity<ResponseObject> getAvailableRooms(
-            @RequestParam Long checkInDate,
-            @RequestParam Long checkOutDate,
-            @RequestParam Integer hotelId
-    ) {
-        List<RoomDto> roomDtos = roomService.getAvailableRooms(checkInDate, checkOutDate, hotelId);
-        return ResponseEntity.ok(ResponseObject.builder()
-                .data(roomDtos)
-                .message("Fetched available rooms")
-                .responseCode(HttpStatus.OK.value())
-                .build());
-    }
     @GetMapping("equipment")
     public ResponseEntity<ResponseObject> getAllEquipment(
             @AuthenticationPrincipal CustomUserDetails user
