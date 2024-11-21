@@ -1,5 +1,6 @@
 package hotelmanager.demo.controllers;
 
+import hotelmanager.demo.dto.EmployeeDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.http.HttpStatus;
@@ -11,7 +12,7 @@ import hotelmanager.demo.models.Employee;
 import hotelmanager.demo.security.CustomUserDetails;
 import hotelmanager.demo.services.EmployeeService;
 import jakarta.validation.Valid;
-import hotelmanager.demo.dto.EmployeeDto;
+import hotelmanager.demo.dto.EmployeeResponseDto;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -30,10 +31,19 @@ public class EmployeeController {
                 .responseCode(HttpStatus.OK.value())
                 .build());
     }
+    @GetMapping("getInfoEmployee")
+    public ResponseEntity<ResponseObject> getEmployeeInfo(@AuthenticationPrincipal CustomUserDetails user) {
+        EmployeeResponseDto employee = employeeService.getEmployeeByUserId(user);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .data(employee)
+                .message("Get employee info successfully")
+                .responseCode(HttpStatus.OK.value())
+                .build());
+    }
 
     @GetMapping("{id}")
     public ResponseEntity<ResponseObject> getEmployeeById(@PathVariable Integer id) {
-        EmployeeDto employee = employeeService.getEmployeeById(id);
+        EmployeeResponseDto employee = employeeService.getEmployeeById(id);
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(employee)
                 .message("Fetched employee by id")
@@ -69,4 +79,6 @@ public class EmployeeController {
                 .responseCode(HttpStatus.OK.value())
                 .build());
     }
+
+    
 }

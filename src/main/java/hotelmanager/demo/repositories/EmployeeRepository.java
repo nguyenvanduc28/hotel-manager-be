@@ -14,13 +14,22 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     List<Employee> findByHotelId(int hotelId);
 
     @Query(value = """
-        SELECT r.* FROM role r 
+        SELECT r.id, r.name FROM role r 
         JOIN user_role ur ON r.id = ur.role_id 
         JOIN user u ON ur.user_id = u.id 
         JOIN employee e ON e.user_id = u.id 
         WHERE e.id = :employeeId""", nativeQuery = true)
-    List<Role> findRoleListByEmployeeId(@Param("employeeId") int employeeId);
+    List<Object[]> findRoleListByEmployeeId(@Param("employeeId") int employeeId);
 
-    @Query(value = "SELECT e.name FROM employee e WHERE e.id = :employeeId", nativeQuery = true)
+    @Query(value = """
+        SELECT u.username FROM employee e 
+        JOIN user u ON e.user_id = u.id 
+        WHERE e.id = :employeeId""", nativeQuery = true)
     String findUserNameEmployeeById(@Param("employeeId") int employeeId);
+
+    @Query(value = """
+        SELECT e.* FROM employee e 
+        JOIN user u ON e.user_id = u.id 
+        WHERE u.id = :userId""", nativeQuery = true)
+    Employee findByUserId(@Param("userId") int userId);
 }

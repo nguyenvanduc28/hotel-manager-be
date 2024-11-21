@@ -101,11 +101,22 @@ public class SecurityConfiguration {
                                 .requestMatchers(HttpMethod.GET, "/api/search/room/avai").permitAll()
                         .requestMatchers(HttpMethod.POST, "/admin/auth/register-admin").permitAll()
 
-                        .requestMatchers(HttpMethod.GET, "/admin/employee").hasAnyAuthority(RoleType.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/admin/employee/getall2").hasAnyAuthority(RoleType.ADMIN.name())
                         .requestMatchers(HttpMethod.GET, "/admin/employee/{id}").hasAnyAuthority(RoleType.ADMIN.name())
                         .requestMatchers(HttpMethod.POST, "/admin/employee/create").hasAnyAuthority(RoleType.ADMIN.name())
                         .requestMatchers(HttpMethod.PUT, "/admin/employee/update/{id}").hasAnyAuthority(RoleType.ADMIN.name())
-
+                        .requestMatchers(HttpMethod.GET, "/admin/employee/getInfoEmployee").hasAnyAuthority(
+                            RoleType.ADMIN.name(),
+                            RoleType.RECEPTIONIST.name(),
+                            RoleType.WAREHOUSE_MANAGER.name(),
+                            RoleType.STAFF_MANAGER.name(),
+                            RoleType.CUSTOMER_MANAGER.name(), 
+                            RoleType.SERVICE_MANAGER.name(),
+                            RoleType.REPORT_MANAGER.name(),
+                            RoleType.INVOICE_MANAGER.name(),
+                            RoleType.HOTEL_INFO_MANAGER.name(),
+                            RoleType.SERVICE_COUNTER.name()
+                        )
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
