@@ -31,4 +31,5 @@ public class BookingDto extends BaseDto {
     private List<BookingConsumableDto> consumablesUsed;
     private List<BookingEquipmentDamagedDto> equipmentDamagedList;
     private List<ImageDto> images;
+    
 }

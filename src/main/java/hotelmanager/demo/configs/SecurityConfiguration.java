@@ -97,8 +97,8 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/admin/hotels/get/{id}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/admin/hotels/get-info-hotel").permitAll()
 
-                                .requestMatchers(HttpMethod.GET, "/api/search/hotels").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/search/room/avai").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/search/hotels").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/search/room/avai").permitAll()
                         .requestMatchers(HttpMethod.POST, "/admin/auth/register-admin").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/admin/employee/getall2").hasAnyAuthority(RoleType.ADMIN.name())
@@ -117,6 +117,14 @@ public class SecurityConfiguration {
                             RoleType.HOTEL_INFO_MANAGER.name(),
                             RoleType.SERVICE_COUNTER.name()
                         )
+
+                        .requestMatchers(HttpMethod.GET, "/admin/service/service-type-list").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.SERVICE_MANAGER.name())
+                        .requestMatchers(HttpMethod.POST, "/admin/service/create-service-type").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.SERVICE_MANAGER.name())
+                        .requestMatchers(HttpMethod.PUT, "/admin/service/update-service-type").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.SERVICE_MANAGER.name())
+
+                        .requestMatchers(HttpMethod.GET, "/admin/service/service-item-list").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.SERVICE_MANAGER.name())
+                        .requestMatchers(HttpMethod.POST, "/admin/service/create-service-item").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.SERVICE_MANAGER.name())
+                        .requestMatchers(HttpMethod.PUT, "/admin/service/update-service-item").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.SERVICE_MANAGER.name())
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)

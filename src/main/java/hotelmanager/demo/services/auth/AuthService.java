@@ -9,6 +9,7 @@ import hotelmanager.demo.models.UserEntity;
 import hotelmanager.demo.repositories.RoleRepository;
 import hotelmanager.demo.repositories.UserRepository;
 import hotelmanager.demo.services.HotelService;
+import hotelmanager.demo.services.ServiceService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -38,18 +39,23 @@ public class AuthService {
     private final JwtService jwtService;
 
     @Autowired
+    private final ServiceService serviceService;
+
+    @Autowired
     private final AuthenticationManager authenticationManager;
 
     public AuthService(UserRepository userRepository,
                        HotelService hotelService, RoleRepository roleRepository, PasswordEncoder passwordEncoder,
                        JwtService jwtService,
-                       AuthenticationManager authenticationManager) {
+                       AuthenticationManager authenticationManager,
+                       ServiceService serviceService) {
         this.userRepository = userRepository;
         this.hotelService = hotelService;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
+        this.serviceService = serviceService;
     }
 
     public AuthResponse authenticate(AuthLoginDto authDto) {
@@ -112,6 +118,9 @@ public class AuthService {
         HotelDto hotelDto1 = hotelService.createHotel(hotelDto);
         userEntity.setHotelId(hotelDto1.getId());
         userRepository.save(userEntity);
+
+        //init service type
+        serviceService.initServiceType(hotelDto1.getId());
         
         var jwtToken = jwtService.generateToken(userEntity.getUsername());
         ModelMapper modelMapper = new ModelMapper();
