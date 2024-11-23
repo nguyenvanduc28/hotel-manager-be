@@ -18,4 +18,5 @@ public interface IBookingDto {
     Integer getNumberOfAdults();
     Integer getNumberOfChildren();
     Boolean getIsGuaranteed();
+    Integer getCustomerId();
 }

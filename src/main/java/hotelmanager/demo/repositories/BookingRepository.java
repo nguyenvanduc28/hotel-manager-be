@@ -30,7 +30,8 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
                    b.canceled_at AS canceledAt,
                    b.number_of_adults AS numberOfAdults,
                    b.number_of_children AS numberOfChildren,
-                   b.is_guaranteed AS isGuaranteed
+                   b.is_guaranteed AS isGuaranteed,
+                   b.customer_id AS customerId
             FROM bookings b
             WHERE b.hotel_id = :hotelId AND b.deleted = false
             ORDER BY 
@@ -53,7 +54,7 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     @Query(value = """
             SELECT * FROM bookings b
             WHERE (:status IS NULL OR b.status = :status) AND b.hotel_id = :hotelId AND b.deleted = false
-            ORDER BY COALESCE(b.check_in_date, b.booking_date) ASC
+            ORDER BY b.updated_at DESC
             """, nativeQuery = true)
     List<Booking> searchByStatus(@Param("status") String status, @Param("hotelId") Integer hotelId);
 
@@ -73,7 +74,8 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
                    b.canceled_at AS canceledAt,
                    b.number_of_adults AS numberOfAdults,
                    b.number_of_children AS numberOfChildren,
-                   b.is_guaranteed AS isGuaranteed
+                   b.is_guaranteed AS isGuaranteed,
+                   b.customer_id AS customerId
             FROM bookings b
             LEFT JOIN customers c ON b.customer_id = c.id
             WHERE c.name LIKE %:customerName% AND b.hotel_id = :hotelId AND b.deleted = false
@@ -145,7 +147,7 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
             """, nativeQuery = true)
     List<IBookingDto> findAllBookingDtos(@Param("hotelId") Integer hotelId);
 
-    List<Booking> findAllBookingsByHotelId(@Param("hotelId") Integer hotelId);
+    List<Booking> findAllBookingsByHotelIdOrderByCreatedAtDesc(@Param("hotelId") Integer hotelId);
 
     @Query(value = """
             SELECT DISTINCT r.id AS id,

@@ -39,12 +39,4 @@ public class Booking extends BaseEntity {
     private Integer numberOfChildren;
     @OneToMany(mappedBy = "booking")
     private List<BookingRoom> bookingRooms;
-
-//    @OneToMany(mappedBy = "booking")
-//    @JsonManagedReference
-//    private List<BookingConsumable> bookingConsumables;
-//
-//    @OneToMany(mappedBy = "booking")
-//    @JsonManagedReference
-//    private List<BookingEquipment> bookingEquipment;
 }

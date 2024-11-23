@@ -1,5 +1,6 @@
 package hotelmanager.demo.controllers;
 
+import hotelmanager.demo.dto.BookingServiceItemDto;
 import hotelmanager.demo.dto.ResponseObject;
 import hotelmanager.demo.dto.bookingDtos.BookingConsumableDto;
 import hotelmanager.demo.dto.bookingDtos.BookingDto;
@@ -191,6 +192,40 @@ public class BookingController {
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(null)
                 .message("Unchecked-in booking successfully")
+                .responseCode(HttpStatus.OK.value())
+                .build());
+    }
+
+    @PostMapping("/{bookingId}/service-item")
+    public ResponseEntity<ResponseObject> addBookingServiceItem(
+            @PathVariable Integer bookingId,
+            @RequestBody List<BookingServiceItemDto> serviceItemDtos) {
+        List<BookingServiceItemDto> savedServiceItems = bookingService.addBookingServiceItem(bookingId, serviceItemDtos);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .data(savedServiceItems)
+                .message("Add service item successfully")
+                .responseCode(HttpStatus.OK.value())
+                .build());
+    }
+
+    @PutMapping("/{bookingId}/service-item")
+    public ResponseEntity<ResponseObject> updateBookingServiceItemList(
+            @PathVariable Integer bookingId,
+            @RequestBody List<BookingServiceItemDto> serviceItemDtos) {
+        List<BookingServiceItemDto> savedServiceItems = bookingService.updateBookingServiceItemList(bookingId, serviceItemDtos);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .data(savedServiceItems)
+                .message("Update service item successfully")
+                .responseCode(HttpStatus.OK.value())
+                .build());
+    }
+
+    @GetMapping("/{bookingId}/service-item")
+    public ResponseEntity<ResponseObject> getBookingServiceItem(@PathVariable Integer bookingId) {
+        List<BookingServiceItemDto> serviceItemDtos = bookingService.getBookingServiceItem(bookingId);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .data(serviceItemDtos)
+                .message("Get service item successfully")
                 .responseCode(HttpStatus.OK.value())
                 .build());
     }
