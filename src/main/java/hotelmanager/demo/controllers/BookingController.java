@@ -1,17 +1,15 @@
 package hotelmanager.demo.controllers;
 
-import hotelmanager.demo.dto.BookingServiceItemDto;
+import hotelmanager.demo.dto.BookingServiceDto;
+import hotelmanager.demo.dto.BookingServiceOrderDto;
 import hotelmanager.demo.dto.ResponseObject;
 import hotelmanager.demo.dto.bookingDtos.BookingConsumableDto;
 import hotelmanager.demo.dto.bookingDtos.BookingDto;
 import hotelmanager.demo.dto.bookingDtos.BookingEquipmentDamagedDto;
-import hotelmanager.demo.dto.bookingDtos.CustomerDto;
-import hotelmanager.demo.dto.roomDtos.RoomDto;
 import hotelmanager.demo.models.BookingConsumables;
 import hotelmanager.demo.models.BookingEquipmentDamaged;
 import hotelmanager.demo.security.CustomUserDetails;
 import hotelmanager.demo.services.bookings.BookingService;
-import hotelmanager.demo.services.bookings.CustomerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -165,9 +163,10 @@ public class BookingController {
     @PostMapping("/{bookingId}/checkout")
     public ResponseEntity<ResponseObject> checkoutBooking(
         @PathVariable Integer bookingId,
-        @RequestBody BookingDto bookingDto
-        ) {
-        BookingDto bookingDto1 = bookingService.checkout(bookingId, bookingDto);
+        @RequestBody BookingDto bookingDto,
+        @AuthenticationPrincipal CustomUserDetails user
+    ) {
+        BookingDto bookingDto1 = bookingService.checkout(bookingId, bookingDto, user.getUser().getHotelId());
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(bookingDto1)
                 .message("Checkout booking successfully")
@@ -196,37 +195,62 @@ public class BookingController {
                 .build());
     }
 
-    @PostMapping("/{bookingId}/service-item")
-    public ResponseEntity<ResponseObject> addBookingServiceItem(
-            @PathVariable Integer bookingId,
-            @RequestBody List<BookingServiceItemDto> serviceItemDtos) {
-        List<BookingServiceItemDto> savedServiceItems = bookingService.addBookingServiceItem(bookingId, serviceItemDtos);
+    @GetMapping("/{bookingId}/services")
+    public ResponseEntity<ResponseObject> getServicesByBookingId(@PathVariable Integer bookingId) {
+        BookingServiceDto services = bookingService.getServicesByBookingId(bookingId);
         return ResponseEntity.ok(ResponseObject.builder()
-                .data(savedServiceItems)
-                .message("Add service item successfully")
+                .data(services)
+                .message("Get services by booking id")
                 .responseCode(HttpStatus.OK.value())
                 .build());
     }
 
-    @PutMapping("/{bookingId}/service-item")
-    public ResponseEntity<ResponseObject> updateBookingServiceItemList(
-            @PathVariable Integer bookingId,
-            @RequestBody List<BookingServiceItemDto> serviceItemDtos) {
-        List<BookingServiceItemDto> savedServiceItems = bookingService.updateBookingServiceItemList(bookingId, serviceItemDtos);
+    @PostMapping("/{orderId}/confirm-serviced")
+    public ResponseEntity<ResponseObject> confirmServicedForServiceOrder(@PathVariable Integer orderId) {
+        bookingService.confirmServicedForServiceOrder(orderId);
         return ResponseEntity.ok(ResponseObject.builder()
-                .data(savedServiceItems)
-                .message("Update service item successfully")
+                .data(null)
+                .message("Confirmed serviced for service order")
                 .responseCode(HttpStatus.OK.value())
                 .build());
     }
 
-    @GetMapping("/{bookingId}/service-item")
-    public ResponseEntity<ResponseObject> getBookingServiceItem(@PathVariable Integer bookingId) {
-        List<BookingServiceItemDto> serviceItemDtos = bookingService.getBookingServiceItem(bookingId);
+    @PostMapping("/{orderId}/delete")
+    public ResponseEntity<ResponseObject> deleteOrder(@PathVariable Integer orderId) {
+        bookingService.deleteOrder(orderId);
         return ResponseEntity.ok(ResponseObject.builder()
-                .data(serviceItemDtos)
-                .message("Get service item successfully")
+                .data(null)
+                .message("Deleted service order")
                 .responseCode(HttpStatus.OK.value())
                 .build());
     }
+
+    @PostMapping("/{bookingId}/service-order")
+    public ResponseEntity<ResponseObject> createNewOrder(
+        @PathVariable Integer bookingId, 
+        @RequestBody BookingServiceOrderDto bookingServiceOrderDto, 
+        @AuthenticationPrincipal CustomUserDetails user
+    ) {
+        BookingServiceOrderDto bookingServiceOrderDto1 = bookingService.createNewOrder(bookingId, bookingServiceOrderDto, user.getUser().getHotelId());
+        return ResponseEntity.ok(ResponseObject.builder()
+                .data(bookingServiceOrderDto)
+                .message("Created new service order")
+                .responseCode(HttpStatus.OK.value())
+                .build());
+    }
+
+    @PutMapping("/{orderId}/service-order")
+    public ResponseEntity<ResponseObject> updateOrder(
+        @PathVariable Integer orderId, 
+        @RequestBody BookingServiceOrderDto bookingServiceOrderDto, 
+        @AuthenticationPrincipal CustomUserDetails user
+    ) {
+        BookingServiceOrderDto updatedOrder = bookingService.updateOrder(orderId, bookingServiceOrderDto, user.getUser().getHotelId());
+        return ResponseEntity.ok(ResponseObject.builder()
+                .data(updatedOrder)
+                .message("Updated service order")
+                .responseCode(HttpStatus.OK.value())
+                .build());
+    }
+
 }

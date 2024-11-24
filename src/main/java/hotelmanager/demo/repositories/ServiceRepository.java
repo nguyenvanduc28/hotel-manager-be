@@ -8,4 +8,5 @@ import java.util.List;
 @Repository
 public interface ServiceRepository extends JpaRepository<ServiceHotel, Integer> {
     List<ServiceHotel> findAllByHotelId(int hotelId);
+    
 }

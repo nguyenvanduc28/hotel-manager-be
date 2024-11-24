@@ -1,7 +1,7 @@
 package hotelmanager.demo.dto.bookingDtos;
 
 import hotelmanager.demo.dto.BaseDto;
-import hotelmanager.demo.dto.BookingServiceItemDto;
+import hotelmanager.demo.dto.BookingServiceDto;
 import hotelmanager.demo.dto.roomDtos.RoomDto;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,7 +31,7 @@ public class BookingDto extends BaseDto {
     private List<RoomDto> rooms;
     private List<BookingConsumableDto> consumablesUsed;
     private List<BookingEquipmentDamagedDto> equipmentDamagedList;
-    private List<BookingServiceItemDto> servicesUsed;
+    private BookingServiceDto servicesUsed;
     private List<ImageDto> images;
     
 }

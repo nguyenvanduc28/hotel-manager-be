@@ -79,9 +79,13 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "admin/bookings/{bookingId}/checkout").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
                         .requestMatchers(HttpMethod.POST, "admin/bookings/{bookingId}/unconfirm").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
                         .requestMatchers(HttpMethod.POST, "admin/bookings/{bookingId}/uncheckin").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
-                        .requestMatchers(HttpMethod.POST, "admin/bookings/{bookingId}/service-item").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name(), RoleType.SERVICE_COUNTER.name())
-                        .requestMatchers(HttpMethod.PUT, "admin/bookings/{bookingId}/service-item").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name(), RoleType.SERVICE_COUNTER.name())
-                        .requestMatchers(HttpMethod.GET, "admin/bookings/{bookingId}/service-item").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name(), RoleType.SERVICE_COUNTER.name())
+
+                        .requestMatchers(HttpMethod.GET, "/admin/bookings/{bookingId}/services").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name())
+                        .requestMatchers(HttpMethod.GET, "/admin/bookings/{bookingId}/service-order").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name())
+                        .requestMatchers(HttpMethod.POST, "/admin/bookings/{bookingId}/service-order").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name())
+                        .requestMatchers(HttpMethod.PUT, "/admin/bookings/{orderId}/service-order").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name())
+                        .requestMatchers(HttpMethod.POST, "/admin/bookings/{orderId}/confirm-serviced").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name())
+                        .requestMatchers(HttpMethod.POST, "/admin/bookings/{orderId}/delete").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name())
 
                         .requestMatchers(HttpMethod.GET, "/admin/invoices/getall").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
                         .requestMatchers(HttpMethod.GET, "/admin/invoices/{id}").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())

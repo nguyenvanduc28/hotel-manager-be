@@ -1,20 +1,19 @@
 package hotelmanager.demo.services.bookings;
 
-import hotelmanager.demo.dto.BookingServiceItemDto;
-import hotelmanager.demo.dto.ServiceDto;
-import hotelmanager.demo.dto.ServiceItemDto;
+import hotelmanager.demo.dto.*;
 import hotelmanager.demo.dto.bookingDtos.*;
 import hotelmanager.demo.dto.roomDtos.*;
 import hotelmanager.demo.exceptions.NotFoundException;
 import hotelmanager.demo.models.*;
 import hotelmanager.demo.models.enums.BookingStatus;
+import hotelmanager.demo.models.enums.BookingServiceOrderStatus;
+
 import hotelmanager.demo.models.enums.EquipmentStatus;
 import hotelmanager.demo.repositories.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,11 +43,15 @@ public class BookingService {
     @Autowired
     private BookingEquipmentDamagedRepository bookingEquipmentDamagedRepository;
     @Autowired
-    private BookingServiceItemRepository bookingServiceItemRepository;
+    private BookingServiceRepository bookingServiceRepository;
     @Autowired
     private ServiceItemRepository serviceItemRepository;
     @Autowired
     private ServiceRepository serviceRepository;
+    @Autowired
+    private OrderItemRepository orderItemRepository;
+    @Autowired
+    private BookingServiceOrderRepository bookingServiceOrderRepository;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -120,28 +123,49 @@ public class BookingService {
         }
         bookingDto.setEquipmentDamagedList(damagedDtos);
 
-        // Get service items
-        List<BookingServiceItem> serviceItems = bookingServiceItemRepository.findAllServiceItemByBookingId(bookingDto.getId());
-        List<BookingServiceItemDto> serviceItemDtos = new ArrayList<>();
-        for (BookingServiceItem serviceItem : serviceItems) {
-            BookingServiceItemDto serviceItemDto = modelMapper.map(serviceItem, BookingServiceItemDto.class);
+        // Get service items and orders
+        BookingServiceEntity bookingService = bookingServiceRepository.findByBookingId(bookingDto.getId());
+        if (bookingService != null) {
+            BookingServiceDto bookingServiceDto = modelMapper.map(bookingService, BookingServiceDto.class);
             
-            // Get service item details
-            ServiceItem item = serviceItemRepository.findById(serviceItem.getServiceItemId())
-                .orElseThrow(() -> new NotFoundException("Service item not found"));
-            ServiceItemDto itemDto = modelMapper.map(item, ServiceItemDto.class);
-            
-            // Get service type for the item
-            ServiceHotel serviceType = serviceRepository.findById(item.getServiceTypeId())
-                .orElseThrow(() -> new NotFoundException("Service type not found"));
-            ServiceDto serviceTypeDto = modelMapper.map(serviceType, ServiceDto.class);
-            
-            itemDto.setServiceType(serviceTypeDto);
-            serviceItemDto.setServiceItem(itemDto);
-            
-            serviceItemDtos.add(serviceItemDto);
+            // Get all service orders for this booking
+            List<BookingServiceOrder> bookingServiceOrders = bookingServiceOrderRepository.findByBookingServiceId(bookingService.getId());
+            List<BookingServiceOrderDto> bookingServiceOrderDtos = new ArrayList<>();
+
+            // Process each service order
+            for (BookingServiceOrder bookingServiceOrder : bookingServiceOrders) {
+                BookingServiceOrderDto orderDto = modelMapper.map(bookingServiceOrder, BookingServiceOrderDto.class);
+                
+                // Get all order items for this service order
+                List<OrderItem> orderItems = orderItemRepository.findByOrderId(bookingServiceOrder.getId());
+                List<OrderItemDto> orderItemDtos = new ArrayList<>();
+
+                // Process each order item
+                for (OrderItem orderItem : orderItems) {
+                    OrderItemDto itemDto = modelMapper.map(orderItem, OrderItemDto.class);
+                    
+                    // Get and map service item details
+                    ServiceItem serviceItem = serviceItemRepository.findById(orderItem.getServiceItemId())
+                            .orElseThrow(() -> new NotFoundException("Service item not found"));
+                    ServiceItemDto serviceItemDto = modelMapper.map(serviceItem, ServiceItemDto.class);
+                    
+                    // Get and map service type
+                    ServiceHotel serviceType = serviceRepository.findById(serviceItem.getServiceTypeId())
+                            .orElseThrow(() -> new NotFoundException("Service type not found"));
+                    ServiceDto serviceTypeDto = modelMapper.map(serviceType, ServiceDto.class);
+                    
+                    serviceItemDto.setServiceType(serviceTypeDto);
+                    itemDto.setServiceItem(serviceItemDto);
+                    orderItemDtos.add(itemDto);
+                }
+                
+                orderDto.setOrderItems(orderItemDtos);
+                bookingServiceOrderDtos.add(orderDto);
+            }
+
+            bookingServiceDto.setServiceOrders(bookingServiceOrderDtos);
+            bookingDto.setServicesUsed(bookingServiceDto);
         }
-        bookingDto.setServicesUsed(serviceItemDtos);
     }
 
     public List<BookingDto> getSortedBookings(Integer hotelId) {
@@ -331,7 +355,7 @@ public class BookingService {
     }
 
     @Transactional
-    public BookingDto checkout(Integer bookingId, BookingDto bookingDto) {
+    public BookingDto checkout(Integer bookingId, BookingDto bookingDto, int hotelId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Không tìm thấy booking"));
         boolean isUpdate = booking.getStatus().equals(BookingStatus.AWAITING_PAYMENT);
@@ -358,8 +382,6 @@ public class BookingService {
             }
             bookingEquipmentDamagedRepository.deleteAllByBookingId(bookingId);
 
-            // Xóa service item cũ
-            bookingServiceItemRepository.deleteAllByBookingId(bookingId);
         }
 
         // Thêm consumables mới
@@ -381,9 +403,6 @@ public class BookingService {
         // Thêm equipment damaged mới
         List<BookingEquipmentDamaged> equipmentDamageds = List.of(modelMapper.map(bookingDto.getEquipmentDamagedList(), BookingEquipmentDamaged[].class));
         this.addBookingEquipmentDamaged(bookingId, equipmentDamageds);
-
-        // Thêm service item mới
-        this.addBookingServiceItem(bookingId, bookingDto.getServicesUsed());
 
         // Cập nhật status của equipment trong room
         for (BookingEquipmentDamagedDto bookingEquipmentDamagedDto : bookingDto.getEquipmentDamagedList()) {
@@ -443,74 +462,164 @@ public class BookingService {
         bookingRepository.checkin(bookingId, null);
     }
 
-    @Transactional(readOnly = true)
-    public List<BookingServiceItemDto> getBookingServiceItem(Integer bookingId) {
-        List<BookingServiceItem> serviceItems = bookingServiceItemRepository.findAllServiceItemByBookingId(bookingId);
-        return List.of(modelMapper.map(serviceItems, BookingServiceItemDto[].class));
-    }
-
     @Transactional
-    public List<BookingServiceItemDto> addBookingServiceItem(Integer bookingId, List<BookingServiceItemDto> serviceItemDtos) {
-        Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new NotFoundException("Không tìm thấy booking"));        
-        
-        List<BookingServiceItem> serviceItems = new ArrayList<>();
-        for (BookingServiceItemDto serviceItemDto : serviceItemDtos) {
-            BookingServiceItem serviceItem = modelMapper.map(serviceItemDto, BookingServiceItem.class);
-            serviceItem.setBookingId(bookingId);
-            ServiceItem serviceItemInfo = serviceItemRepository.findById(serviceItemDto.getServiceItem().getId())
-                    .orElseThrow(() -> new NotFoundException("Không tìm thấy service item"));
-            serviceItem.setServiceItemId(serviceItemInfo.getId());
-            
-            // Tính toán totalPrice
-            serviceItem.setTotalPrice(serviceItemInfo.getPrice() * serviceItem.getQuantity());
-
-            serviceItems.add(serviceItem);
-        }
-        List<BookingServiceItem> savedServiceItems = bookingServiceItemRepository.saveAll(serviceItems);
-        return List.of(modelMapper.map(savedServiceItems, BookingServiceItemDto[].class));
-    }
-
-    @Transactional
-    public BookingServiceItemDto addBookingServiceItem(Integer bookingId, BookingServiceItemDto serviceItemDto) {
-        Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new NotFoundException("Không tìm thấy booking"));   
-
-        BookingServiceItem serviceItem = modelMapper.map(serviceItemDto, BookingServiceItem.class);
-        serviceItem.setBookingId(bookingId);
-        ServiceItem serviceItemInfo = serviceItemRepository.findById(serviceItemDto.getServiceItem().getId())
-                .orElseThrow(() -> new NotFoundException("Không tìm thấy service item"));
-        serviceItem.setServiceItemId(serviceItemInfo.getId());
-        
-        // Tính toán totalPrice
-        serviceItem.setTotalPrice(serviceItemInfo.getPrice() * serviceItem.getQuantity());
-        
-        BookingServiceItem savedServiceItem = bookingServiceItemRepository.save(serviceItem);
-        return modelMapper.map(savedServiceItem, BookingServiceItemDto.class);
-    }
-
-    @Transactional
-    public List<BookingServiceItemDto> updateBookingServiceItemList(Integer bookingId, List<BookingServiceItemDto> serviceItemDtos) {
-        // Xóa service item cũ
-        bookingServiceItemRepository.deleteAllByBookingId(bookingId);
-
-        // Set bookingId and serviceItemId for each service item
-        List<BookingServiceItem> serviceItems = new ArrayList<>();
-        for (BookingServiceItemDto serviceItemDto : serviceItemDtos) {
-            BookingServiceItem serviceItem = modelMapper.map(serviceItemDto, BookingServiceItem.class);
-            serviceItem.setBookingId(bookingId);
-            ServiceItem serviceItemInfo = serviceItemRepository.findById(serviceItemDto.getServiceItem().getId())
-                    .orElseThrow(() -> new NotFoundException("Không tìm thấy service item"));
-            serviceItem.setServiceItemId(serviceItemInfo.getId());
-            
-            // Tính toán totalPrice
-            serviceItem.setTotalPrice(serviceItemInfo.getPrice() * serviceItem.getQuantity());
-            
-            serviceItems.add(serviceItem);
+    public BookingServiceDto getServicesByBookingId(Integer bookingId) {
+        // lấy booking service và chuyển đổi thành dto
+        BookingServiceEntity bookingService = bookingServiceRepository.findByBookingId(bookingId);
+        if (bookingService == null) {
+            throw new NotFoundException("Không tìm thấy booking service");
         }
 
-        // Thêm service item mới
-        List<BookingServiceItem> savedServiceItems = bookingServiceItemRepository.saveAll(serviceItems);
-        return List.of(modelMapper.map(savedServiceItems, BookingServiceItemDto[].class));
+        BookingServiceDto bookingServiceDto = modelMapper.map(bookingService, BookingServiceDto.class);
+
+        // lấy tất cả service order cho booking này
+        List<BookingServiceOrder> bookingServiceOrders = bookingServiceOrderRepository.findByBookingServiceId(bookingService.getId());
+        List<BookingServiceOrderDto> bookingServiceOrderDtos = new ArrayList<>();
+
+        // xử lý mỗi service order
+        for (BookingServiceOrder bookingServiceOrder : bookingServiceOrders) {
+            BookingServiceOrderDto orderDto = modelMapper.map(bookingServiceOrder, BookingServiceOrderDto.class);
+            
+            // lấy tất cả order item cho service order này
+            List<OrderItem> orderItems = orderItemRepository.findByOrderId(bookingServiceOrder.getId());
+            List<OrderItemDto> orderItemDtos = new ArrayList<>();
+
+            // xử lý mỗi order item
+            for (OrderItem orderItem : orderItems) {
+                OrderItemDto itemDto = modelMapper.map(orderItem, OrderItemDto.class);
+                
+                // lấy và chuyển đổi service item details
+                ServiceItem serviceItem = serviceItemRepository.findById(orderItem.getServiceItemId())
+                        .orElseThrow(() -> new NotFoundException("Không tìm thấy service item"));
+                ServiceItemDto serviceItemDto = modelMapper.map(serviceItem, ServiceItemDto.class);
+                
+                // lấy và chuyển đổi service type
+                ServiceHotel serviceType = serviceRepository.findById(serviceItem.getServiceTypeId())
+                        .orElseThrow(() -> new NotFoundException("Không tìm thấy loại dịch vụ"));
+                ServiceDto serviceTypeDto = modelMapper.map(serviceType, ServiceDto.class);
+                
+                serviceItemDto.setServiceType(serviceTypeDto);
+                itemDto.setServiceItem(serviceItemDto);
+                orderItemDtos.add(itemDto);
+            }
+            
+            orderDto.setOrderItems(orderItemDtos);
+            bookingServiceOrderDtos.add(orderDto);
+        }
+
+        bookingServiceDto.setServiceOrders(bookingServiceOrderDtos);
+        return bookingServiceDto;
+    }
+
+    @Transactional
+    public BookingServiceOrderDto createNewOrder(Integer bookingId, BookingServiceOrderDto bookingServiceOrderDto, int hotelId) {
+        BookingServiceEntity bookingService = bookingServiceRepository.findByBookingId(bookingId);
+        if (bookingService == null) {
+            throw new NotFoundException("Không tìm thấy booking service");
+        }
+
+        BookingServiceOrder bookingServiceOrder = modelMapper.map(bookingServiceOrderDto, BookingServiceOrder.class);
+        Long orderCreatedAt = Instant.now().getEpochSecond();
+        bookingServiceOrder.setBookingServiceId(bookingService.getId());
+        bookingServiceOrder.setOrderCreatedAt(orderCreatedAt);
+        bookingServiceOrder.setHotelId(hotelId);
+
+        // Tính lại total price cho từng order item và tổng
+        Long totalPrice = 0L;
+        List<OrderItem> orderItems = new ArrayList<>();
+        
+        for (OrderItemDto itemDto : bookingServiceOrderDto.getOrderItems()) {
+            // Lấy service item để kiểm tra giá
+            ServiceItem serviceItem = serviceItemRepository.findById(itemDto.getServiceItem().getId())
+                    .orElseThrow(() -> new NotFoundException("Không tìm thấy service item"));
+            
+            // Tính lại total price cho order item
+            Long itemTotalPrice = serviceItem.getPrice() * itemDto.getQuantity();
+            itemDto.setTotalPrice(itemTotalPrice);
+            totalPrice += itemTotalPrice;
+
+            // Tạo và cập nhật order item
+            OrderItem orderItem = modelMapper.map(itemDto, OrderItem.class);
+            orderItem.setServiceItemId(itemDto.getServiceItem().getId());
+            orderItem.setTotalPrice(itemTotalPrice);
+            orderItems.add(orderItem);
+        }
+
+        // Cập nhật tổng giá và lưu booking service order
+        bookingServiceOrder.setTotalPrice(totalPrice);
+        bookingServiceOrderRepository.save(bookingServiceOrder);
+
+        // Cập nhật order id và lưu các order items
+        for (OrderItem orderItem : orderItems) {
+            orderItem.setOrderId(bookingServiceOrder.getId());
+        }
+        orderItemRepository.saveAll(orderItems);
+
+        return modelMapper.map(bookingServiceOrder, BookingServiceOrderDto.class);
+    }
+
+    @Transactional
+    public BookingServiceOrderDto updateOrder(Integer orderId, BookingServiceOrderDto bookingServiceOrderDto, int hotelId) {
+        BookingServiceOrder bookingServiceOrder = bookingServiceOrderRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Không tìm thấy booking service order"));
+
+        // Xóa order items cũ
+        List<OrderItem> oldOrderItems = orderItemRepository.findByOrderId(orderId);
+        orderItemRepository.deleteAll(oldOrderItems);
+
+        // Tính lại total price cho từng order item và tổng
+        Long totalPrice = 0L;
+        List<OrderItem> newOrderItems = new ArrayList<>();
+        
+        for (OrderItemDto itemDto : bookingServiceOrderDto.getOrderItems()) {
+            // Lấy service item để kiểm tra giá
+            ServiceItem serviceItem = serviceItemRepository.findById(itemDto.getServiceItem().getId())
+                    .orElseThrow(() -> new NotFoundException("Không tìm thấy service item"));
+            
+            // Tính lại total price cho order item
+            Long itemTotalPrice = serviceItem.getPrice() * itemDto.getQuantity();
+            itemDto.setTotalPrice(itemTotalPrice);
+            totalPrice += itemTotalPrice;
+
+            // Tạo và cập nhật order item
+            OrderItem orderItem = modelMapper.map(itemDto, OrderItem.class);
+            orderItem.setServiceItemId(itemDto.getServiceItem().getId());
+            orderItem.setOrderId(orderId);
+            orderItem.setTotalPrice(itemTotalPrice);
+            newOrderItems.add(orderItem);
+        }
+
+        // Cập nhật thông tin booking service order
+        bookingServiceOrder.setTotalPrice(totalPrice);
+        bookingServiceOrder.setNote(bookingServiceOrderDto.getNote());
+        bookingServiceOrderRepository.save(bookingServiceOrder);
+
+        // Lưu các order items mới
+        orderItemRepository.saveAll(newOrderItems);
+
+        return modelMapper.map(bookingServiceOrder, BookingServiceOrderDto.class);
+    }
+
+    @Transactional
+    public void confirmServicedForServiceOrder(Integer orderId) {
+        Long currentTime = Instant.now().getEpochSecond() * 1000;
+        BookingServiceOrder order = bookingServiceOrderRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Không tìm thấy booking service order"));
+        order.setServicedAt(currentTime);
+        order.setStatus(BookingServiceOrderStatus.SERVICED);
+        bookingServiceOrderRepository.save(order);
+    }
+
+    @Transactional
+    public void deleteOrder(Integer orderId) {
+        BookingServiceOrder order = bookingServiceOrderRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Không tìm thấy booking service order"));
+                
+        if (BookingServiceOrderStatus.SERVICED.equals(order.getStatus())) {
+            throw new RuntimeException("Không thể xóa đơn hàng đã phục vụ");
+        }
+
+        orderItemRepository.deleteByOrderId(orderId);
+        bookingServiceOrderRepository.deleteById(orderId);
     }
 }

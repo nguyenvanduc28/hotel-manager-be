@@ -1,14 +1,14 @@
 package hotelmanager.demo.dto;
 
+import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 
 @Setter
 @Getter
-public class BookingServiceItemDto extends BaseDto {
+public class BookingServiceDto extends BaseDto {
     private Integer bookingId;
-    private ServiceItemDto serviceItem;
+    private List<BookingServiceOrderDto> serviceOrders;
     private Long totalPrice;
-    private Integer quantity;
-    private String note;
 }
