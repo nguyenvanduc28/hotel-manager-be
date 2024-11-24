@@ -85,6 +85,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/admin/bookings/{bookingId}/service-order").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name())
                         .requestMatchers(HttpMethod.PUT, "/admin/bookings/{orderId}/service-order").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name())
                         .requestMatchers(HttpMethod.POST, "/admin/bookings/{orderId}/confirm-serviced").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name())
+                        .requestMatchers(HttpMethod.POST, "/admin/bookings/{orderId}/change-status").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name())
                         .requestMatchers(HttpMethod.POST, "/admin/bookings/{orderId}/delete").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name())
 
                         .requestMatchers(HttpMethod.GET, "/admin/invoices/getall").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())

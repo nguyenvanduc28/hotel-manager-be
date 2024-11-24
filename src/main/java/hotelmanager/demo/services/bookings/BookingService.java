@@ -235,6 +235,12 @@ public class BookingService {
         }
         bookingRoomRepository.saveAll(bookingRooms);
 
+        // Create booking service
+        BookingServiceEntity bookingService = new BookingServiceEntity();
+        bookingService.setBookingId(booking1.getId());
+        bookingService.setTotalPrice(0);
+        bookingServiceRepository.save(bookingService);
+
         BookingDto bookingDto1 = new BookingDto();
         bookingDto1.setId(booking1.getId());
         bookingDto1.setCheckInDate(booking1.getCheckInDate());
@@ -540,6 +546,7 @@ public class BookingService {
 
             // Tạo và cập nhật order item
             OrderItem orderItem = modelMapper.map(itemDto, OrderItem.class);
+            orderItem.setOrderId(bookingServiceOrder.getId());
             orderItem.setServiceItemId(itemDto.getServiceItem().getId());
             orderItem.setTotalPrice(itemTotalPrice);
             orderItems.add(orderItem);
@@ -607,6 +614,21 @@ public class BookingService {
                 .orElseThrow(() -> new NotFoundException("Không tìm thấy booking service order"));
         order.setServicedAt(currentTime);
         order.setStatus(BookingServiceOrderStatus.SERVICED);
+        bookingServiceOrderRepository.save(order);
+    }
+    @Transactional
+    public void changeStatusToOrderService(Integer orderId, String status) {
+        Long currentTime = Instant.now().getEpochSecond() * 1000;
+        BookingServiceOrder order = bookingServiceOrderRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Không tìm thấy booking service order"));
+
+        if (BookingServiceOrderStatus.NEW.equals(status)) {
+            order.setServicedAt(null);
+        } else if (BookingServiceOrderStatus.SERVICED.equals(status)) {
+            order.setServicedAt(currentTime);
+        }
+        
+        order.setStatus(status);
         bookingServiceOrderRepository.save(order);
     }
 

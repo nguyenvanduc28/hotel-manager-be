@@ -19,4 +19,5 @@ public interface BookingServiceOrderRepository extends JpaRepository<BookingServ
     void confirmServicedForServiceOrder(@Param("orderId") Integer orderId, @Param("status") String status);
 
     List<BookingServiceOrder> findByHotelIdAndStatus(Integer hotelId, String status);
-} 
+
+    } 

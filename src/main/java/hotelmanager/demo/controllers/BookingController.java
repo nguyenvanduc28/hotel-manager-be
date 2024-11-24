@@ -215,6 +215,16 @@ public class BookingController {
                 .build());
     }
 
+    @PostMapping("/{orderId}/change-status")
+    public ResponseEntity<ResponseObject> changeStatusToOrderService(@PathVariable Integer orderId, @RequestParam String status) {
+        bookingService.changeStatusToOrderService(orderId, status);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .data(null)
+                .message("Changed status to order service")
+                .responseCode(HttpStatus.OK.value())
+                .build());
+    }
+
     @PostMapping("/{orderId}/delete")
     public ResponseEntity<ResponseObject> deleteOrder(@PathVariable Integer orderId) {
         bookingService.deleteOrder(orderId);
