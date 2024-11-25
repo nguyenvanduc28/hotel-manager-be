@@ -11,4 +11,6 @@ public enum RoleType {
     INVOICE_MANAGER, // Quyền quản lý hóa đơn và thanh toán
     HOTEL_INFO_MANAGER, // Quyền quản lý thông tin khách sạn
     SERVICE_COUNTER, // Quyền đứng quầy dịch vụ.
+    BAR_COUNTER, // Quyền đứng quầy bar
+    RESTAURANT_COUNTER, // Quyền đứng quầy nhà hàng
 };

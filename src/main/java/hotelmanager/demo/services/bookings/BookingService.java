@@ -238,7 +238,7 @@ public class BookingService {
         // Create booking service
         BookingServiceEntity bookingService = new BookingServiceEntity();
         bookingService.setBookingId(booking1.getId());
-        bookingService.setTotalPrice(0);
+        bookingService.setTotalPrice(0L);
         bookingServiceRepository.save(bookingService);
 
         BookingDto bookingDto1 = new BookingDto();
@@ -525,7 +525,7 @@ public class BookingService {
         }
 
         BookingServiceOrder bookingServiceOrder = modelMapper.map(bookingServiceOrderDto, BookingServiceOrder.class);
-        Long orderCreatedAt = Instant.now().getEpochSecond();
+        Long orderCreatedAt = Instant.now().getEpochSecond() * 1000;
         bookingServiceOrder.setBookingServiceId(bookingService.getId());
         bookingServiceOrder.setOrderCreatedAt(orderCreatedAt);
         bookingServiceOrder.setHotelId(hotelId);
@@ -546,7 +546,6 @@ public class BookingService {
 
             // Tạo và cập nhật order item
             OrderItem orderItem = modelMapper.map(itemDto, OrderItem.class);
-            orderItem.setOrderId(bookingServiceOrder.getId());
             orderItem.setServiceItemId(itemDto.getServiceItem().getId());
             orderItem.setTotalPrice(itemTotalPrice);
             orderItems.add(orderItem);
@@ -554,15 +553,15 @@ public class BookingService {
 
         // Cập nhật tổng giá và lưu booking service order
         bookingServiceOrder.setTotalPrice(totalPrice);
-        bookingServiceOrderRepository.save(bookingServiceOrder);
+        BookingServiceOrder savedOrder = bookingServiceOrderRepository.save(bookingServiceOrder);
 
         // Cập nhật order id và lưu các order items
         for (OrderItem orderItem : orderItems) {
-            orderItem.setOrderId(bookingServiceOrder.getId());
+            orderItem.setOrderId(savedOrder.getId());
         }
         orderItemRepository.saveAll(orderItems);
 
-        return modelMapper.map(bookingServiceOrder, BookingServiceOrderDto.class);
+        return modelMapper.map(savedOrder, BookingServiceOrderDto.class);
     }
 
     @Transactional
