@@ -1,8 +1,10 @@
 package hotelmanager.demo.controllers;
 
+import hotelmanager.demo.dto.BookingServiceOrderDto;
 import hotelmanager.demo.dto.ResponseObject;
 import hotelmanager.demo.dto.ServiceDto;
 import hotelmanager.demo.dto.ServiceItemDto;
+import hotelmanager.demo.dto.ServiceCountDto;
 import hotelmanager.demo.security.CustomUserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -71,6 +73,36 @@ public class ServiceController {
         serviceService.updateServiceItem(serviceItemDto, userDetails.getUser().getHotelId());
         return ResponseEntity.ok(ResponseObject.builder()
                 .message("Update service item successfully")
+                .responseCode(HttpStatus.OK.value())
+                .build());
+    }
+
+    @PutMapping("/update-booking-service-order-status")
+    public ResponseEntity<ResponseObject> updateBookingServiceOrderStatus(@RequestParam int orderId, @RequestParam String status) {
+        serviceService.updateBookingServiceOrderStatus(orderId, status);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .data(null)
+                .message("Update booking service order status successfully")
+                .responseCode(HttpStatus.OK.value())
+                .build());
+    }
+
+    @GetMapping("/booking-service-order-list")
+    public ResponseEntity<ResponseObject> getBookingServiceOrderList(@RequestParam String status, @RequestParam int serviceTypeId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        List<BookingServiceOrderDto> results = serviceService.getBookingServiceOrderByStatus(status, userDetails.getUser().getHotelId(), serviceTypeId);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .data(results)
+                .message("Found booking service order list")
+                .responseCode(HttpStatus.OK.value())
+                .build());
+    }
+
+    @GetMapping("/service-count")
+    public ResponseEntity<ResponseObject> getServiceCount(@RequestParam int serviceTypeId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        ServiceCountDto results = serviceService.getServiceCount(userDetails.getUser().getHotelId(), serviceTypeId);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .data(results)
+                .message("Found service count")
                 .responseCode(HttpStatus.OK.value())
                 .build());
     }

@@ -528,6 +528,7 @@ public class BookingService {
         Long orderCreatedAt = Instant.now().getEpochSecond() * 1000;
         bookingServiceOrder.setBookingServiceId(bookingService.getId());
         bookingServiceOrder.setOrderCreatedAt(orderCreatedAt);
+        bookingServiceOrder.setServiceTypeId(bookingServiceOrderDto.getServiceTypeId());
         bookingServiceOrder.setHotelId(hotelId);
 
         // Tính lại total price cho từng order item và tổng

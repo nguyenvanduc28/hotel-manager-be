@@ -17,4 +17,6 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Integer> {
     @Modifying
     @Query(value = "DELETE FROM order_item WHERE order_id = :orderId", nativeQuery = true)
     void deleteByOrderId(@Param("orderId") Integer orderId);
+
+    List<OrderItem> findAllByOrderId(Integer orderId);
 } 

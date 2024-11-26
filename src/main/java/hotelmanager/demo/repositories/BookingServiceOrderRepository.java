@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+
 import hotelmanager.demo.models.BookingServiceOrder;
 
 @Repository
@@ -18,6 +19,18 @@ public interface BookingServiceOrderRepository extends JpaRepository<BookingServ
     @Query("UPDATE BookingServiceOrder bso SET bso.status = :status WHERE bso.id = :orderId")
     void confirmServicedForServiceOrder(@Param("orderId") Integer orderId, @Param("status") String status);
 
+    @Query("SELECT COUNT(bso) FROM BookingServiceOrder bso WHERE bso.status = :status AND bso.hotelId = :hotelId")
+    int countByStatusAndHotelId(@Param("status") String status, @Param("hotelId") Integer hotelId);
+
     List<BookingServiceOrder> findByHotelIdAndStatus(Integer hotelId, String status);
 
-    } 
+    List<BookingServiceOrder> findAllByStatusAndHotelIdAndServiceTypeId(String status, Integer hotelId, Integer serviceTypeId);
+
+    @Modifying
+    @Query("UPDATE BookingServiceOrder bso SET bso.status = :status WHERE bso.id = :orderId")
+    void updateStatus(@Param("orderId") Integer orderId, @Param("status") String status);
+
+    @Query("SELECT bso FROM BookingServiceOrder bso WHERE bso.hotelId = :hotelId AND bso.status != 'Đã phục vụ' AND bso.serviceTypeId = :serviceTypeId")
+    List<BookingServiceOrder> findAllOrderAvailableWithServiceTypeId(@Param("hotelId") Integer hotelId, @Param("serviceTypeId") Integer serviceTypeId);
+
+} 

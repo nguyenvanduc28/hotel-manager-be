@@ -15,4 +15,5 @@ public class BookingServiceOrderDto extends BaseDto {
     private Long servicedAt;
     private String status;
     private String note;
+    private Integer serviceTypeId;
 }

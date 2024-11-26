@@ -1,9 +1,18 @@
 package hotelmanager.demo.services;
 
+import hotelmanager.demo.dto.BookingServiceOrderDto;
+import hotelmanager.demo.dto.OrderItemDto;
 import hotelmanager.demo.dto.ServiceDto;
 import hotelmanager.demo.dto.ServiceItemDto;
+import hotelmanager.demo.dto.ServiceCountDto;
+import hotelmanager.demo.exceptions.NotFoundException;
+import hotelmanager.demo.models.BookingServiceOrder;
+import hotelmanager.demo.models.OrderItem;
 import hotelmanager.demo.models.ServiceHotel;
 import hotelmanager.demo.models.ServiceItem;
+import hotelmanager.demo.models.enums.BookingServiceOrderStatus;
+import hotelmanager.demo.repositories.BookingServiceOrderRepository;
+import hotelmanager.demo.repositories.OrderItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.modelmapper.ModelMapper;
 
@@ -12,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import hotelmanager.demo.repositories.ServiceRepository;
 import hotelmanager.demo.repositories.ServiceItemRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +31,10 @@ public class ServiceService {
     private ServiceRepository serviceRepository;
     @Autowired
     private ServiceItemRepository serviceItemRepository;
+    @Autowired
+    private BookingServiceOrderRepository bookingServiceOrderRepository;
+    @Autowired
+    private OrderItemRepository orderItemRepository;
     private ModelMapper modelMapper = new ModelMapper();
 
     @Transactional
@@ -119,4 +133,58 @@ public class ServiceService {
         return modelMapper.map(service, ServiceDto.class);
     }
 
+    @Transactional
+    public List<BookingServiceOrderDto> getBookingServiceOrderByStatus(String status, int hotelId, int serviceTypeId) {
+        List<BookingServiceOrder> bookingServiceOrders = bookingServiceOrderRepository.findAllByStatusAndHotelIdAndServiceTypeId(status, hotelId, serviceTypeId);
+        List<BookingServiceOrderDto> bookingServiceOrderDtos = new ArrayList<>();
+
+        for (BookingServiceOrder bookingServiceOrder : bookingServiceOrders) {
+            BookingServiceOrderDto orderDto = modelMapper.map(bookingServiceOrder, BookingServiceOrderDto.class);
+            
+            List<OrderItem> orderItems = orderItemRepository.findAllByOrderId(bookingServiceOrder.getId());
+            List<OrderItemDto> orderItemDtos = new ArrayList<>();
+
+            for (OrderItem orderItem : orderItems) {
+                OrderItemDto itemDto = modelMapper.map(orderItem, OrderItemDto.class);
+                
+                ServiceItem serviceItem = serviceItemRepository.findById(orderItem.getServiceItemId())
+                        .orElseThrow(() -> new NotFoundException("Service item not found"));
+                ServiceItemDto serviceItemDto = modelMapper.map(serviceItem, ServiceItemDto.class);
+                
+                ServiceHotel serviceType = serviceRepository.findById(serviceItem.getServiceTypeId())
+                        .orElseThrow(() -> new NotFoundException("Service type not found"));
+                
+                ServiceDto serviceTypeDto = modelMapper.map(serviceType, ServiceDto.class);
+                
+                serviceItemDto.setServiceType(serviceTypeDto);
+                itemDto.setServiceItem(serviceItemDto);
+                orderItemDtos.add(itemDto);
+            }
+
+            orderDto.setOrderItems(orderItemDtos);
+            bookingServiceOrderDtos.add(orderDto);
+        }
+
+        return bookingServiceOrderDtos;
+    }
+
+    // cập nhật trạng thái của order
+    @Transactional
+    public void updateBookingServiceOrderStatus(int orderId, String status) {
+        bookingServiceOrderRepository.updateStatus(orderId, status);
+    }
+
+    // lấy số lượng order theo trạng thái
+    @Transactional
+    public ServiceCountDto getServiceCount(int hotelId, int serviceTypeId) {
+        ServiceCountDto serviceCountDto = new ServiceCountDto();
+        
+        // Get all orders for the hotel
+        List<BookingServiceOrder> orders = bookingServiceOrderRepository.findAllOrderAvailableWithServiceTypeId(hotelId, serviceTypeId);
+
+        serviceCountDto.setNumOfNewOrder(orders.stream().filter(order -> order.getStatus().equals(BookingServiceOrderStatus.NEW)).count());
+        serviceCountDto.setNumOfInProgressOrder(orders.stream().filter(order -> order.getStatus().equals(BookingServiceOrderStatus.IN_PROGRESS)).count());
+        serviceCountDto.setNumOfReadyToServeOrder(orders.stream().filter(order -> order.getStatus().equals(BookingServiceOrderStatus.READY_TO_SERVE)).count());
+        return serviceCountDto;
+    }
 }

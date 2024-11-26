@@ -15,4 +15,5 @@ public class BookingServiceOrder extends BaseEntity {
     private Long servicedAt;
     private String status = "Mới";
     private String note;
+    private Integer serviceTypeId;
 }
