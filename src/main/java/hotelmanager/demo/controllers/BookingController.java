@@ -243,7 +243,7 @@ public class BookingController {
     ) {
         BookingServiceOrderDto bookingServiceOrderDto1 = bookingService.createNewOrder(bookingId, bookingServiceOrderDto, user.getUser().getHotelId());
         return ResponseEntity.ok(ResponseObject.builder()
-                .data(bookingServiceOrderDto)
+                .data(bookingServiceOrderDto1)
                 .message("Created new service order")
                 .responseCode(HttpStatus.OK.value())
                 .build());

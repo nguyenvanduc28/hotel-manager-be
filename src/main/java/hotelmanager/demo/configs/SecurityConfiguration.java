@@ -80,13 +80,13 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "admin/bookings/{bookingId}/unconfirm").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
                         .requestMatchers(HttpMethod.POST, "admin/bookings/{bookingId}/uncheckin").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
 
-                        .requestMatchers(HttpMethod.GET, "/admin/bookings/{bookingId}/services").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name())
-                        .requestMatchers(HttpMethod.GET, "/admin/bookings/{bookingId}/service-order").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name())
-                        .requestMatchers(HttpMethod.POST, "/admin/bookings/{bookingId}/service-order").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name())
-                        .requestMatchers(HttpMethod.PUT, "/admin/bookings/{orderId}/service-order").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name())
-                        .requestMatchers(HttpMethod.POST, "/admin/bookings/{orderId}/confirm-serviced").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name())
-                        .requestMatchers(HttpMethod.POST, "/admin/bookings/{orderId}/change-status").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name())
-                        .requestMatchers(HttpMethod.POST, "/admin/bookings/{orderId}/delete").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name())
+                        .requestMatchers(HttpMethod.GET, "/admin/bookings/{bookingId}/services").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name(), RoleType.BAR_COUNTER.name(), RoleType.RESTAURANT_COUNTER.name())
+                        .requestMatchers(HttpMethod.GET, "/admin/bookings/{bookingId}/service-order").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name(), RoleType.BAR_COUNTER.name(), RoleType.RESTAURANT_COUNTER.name())
+                        .requestMatchers(HttpMethod.POST, "/admin/bookings/{bookingId}/service-order").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name(), RoleType.BAR_COUNTER.name(), RoleType.RESTAURANT_COUNTER.name())
+                        .requestMatchers(HttpMethod.PUT, "/admin/bookings/{orderId}/service-order").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name(), RoleType.BAR_COUNTER.name(), RoleType.RESTAURANT_COUNTER.name())
+                        .requestMatchers(HttpMethod.POST, "/admin/bookings/{orderId}/confirm-serviced").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name(), RoleType.BAR_COUNTER.name(), RoleType.RESTAURANT_COUNTER.name())
+                        .requestMatchers(HttpMethod.POST, "/admin/bookings/{orderId}/change-status").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name(), RoleType.BAR_COUNTER.name(), RoleType.RESTAURANT_COUNTER.name())
+                        .requestMatchers(HttpMethod.POST, "/admin/bookings/{orderId}/delete").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name(), RoleType.BAR_COUNTER.name(), RoleType.RESTAURANT_COUNTER.name())
 
                         .requestMatchers(HttpMethod.GET, "/admin/invoices/getall").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
                         .requestMatchers(HttpMethod.GET, "/admin/invoices/{id}").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
@@ -114,6 +114,8 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/admin/employee/create").hasAnyAuthority(RoleType.ADMIN.name())
                         .requestMatchers(HttpMethod.PUT, "/admin/employee/update/{id}").hasAnyAuthority(RoleType.ADMIN.name())
                         .requestMatchers(HttpMethod.GET, "/admin/employee/getInfoEmployee").hasAnyAuthority(
+                            RoleType.BAR_COUNTER.name(),
+                            RoleType.RESTAURANT_COUNTER.name(),
                             RoleType.ADMIN.name(),
                             RoleType.RECEPTIONIST.name(),
                             RoleType.WAREHOUSE_MANAGER.name(),
@@ -126,17 +128,17 @@ public class SecurityConfiguration {
                             RoleType.SERVICE_COUNTER.name()
                         )
 
-                        .requestMatchers(HttpMethod.GET, "/admin/service/service-type-list").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.SERVICE_MANAGER.name())
+                        .requestMatchers(HttpMethod.GET, "/admin/service/service-type-list").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name(), RoleType.BAR_COUNTER.name(), RoleType.RESTAURANT_COUNTER.name())
                         .requestMatchers(HttpMethod.POST, "/admin/service/create-service-type").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.SERVICE_MANAGER.name())
                         .requestMatchers(HttpMethod.PUT, "/admin/service/update-service-type").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.SERVICE_MANAGER.name())
 
-                        .requestMatchers(HttpMethod.GET, "/admin/service/service-item-list").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.SERVICE_MANAGER.name())
+                        .requestMatchers(HttpMethod.GET, "/admin/service/service-item-list").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name(), RoleType.BAR_COUNTER.name(), RoleType.RESTAURANT_COUNTER.name())
                         .requestMatchers(HttpMethod.POST, "/admin/service/create-service-item").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.SERVICE_MANAGER.name())
                         .requestMatchers(HttpMethod.PUT, "/admin/service/update-service-item").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.SERVICE_MANAGER.name())
 
-                        .requestMatchers(HttpMethod.PUT, "/admin/service/update-booking-service-order-status").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name())
-                        .requestMatchers(HttpMethod.GET, "/admin/service/booking-service-order-list").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name())
-                        .requestMatchers(HttpMethod.GET, "/admin/service/service-count").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name())
+                        .requestMatchers(HttpMethod.PUT, "/admin/service/update-booking-service-order-status").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name(), RoleType.BAR_COUNTER.name(), RoleType.RESTAURANT_COUNTER.name())
+                        .requestMatchers(HttpMethod.GET, "/admin/service/booking-service-order-list").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name(), RoleType.BAR_COUNTER.name(), RoleType.RESTAURANT_COUNTER.name())
+                        .requestMatchers(HttpMethod.GET, "/admin/service/service-count").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name(), RoleType.BAR_COUNTER.name(), RoleType.RESTAURANT_COUNTER.name())
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
