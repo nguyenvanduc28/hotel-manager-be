@@ -4,6 +4,8 @@ import hotelmanager.demo.dto.BaseDto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class RoomTypeDto extends BaseDto {
@@ -16,4 +18,6 @@ public class RoomTypeDto extends BaseDto {
     private String sizeRange;
     private Integer maxOccupancy;
     private Long basePricePerNight;
+    private List<RoomPriceDto> roomPrices;
+    private Long priceToday;
 }

@@ -28,7 +28,8 @@ public class RoomService {
     private EquipmentRepository equipmentRepository;
     @Autowired
     private ImageRepository imageRepository;
-
+    @Autowired
+    private RoomTypePriceRepository roomTypePriceRepository;
     private ModelMapper modelMapper = new ModelMapper();
 
     // Helper method to map room properties
@@ -166,9 +167,23 @@ public class RoomService {
 
         for (RoomType roomType : roomTypes) {
             RoomTypeDto roomTypeDto = modelMapper.map(roomType, RoomTypeDto.class);
+            List<RoomPrice> roomPrices = roomTypePriceRepository.findAllByRoomTypeId(roomType.getId());
+            roomTypeDto.setRoomPrices(List.of(modelMapper.map(roomPrices, RoomPriceDto[].class)));
             roomTypeDtos.add(roomTypeDto);
         }
 
+        return roomTypeDtos;
+    }
+    @Transactional(readOnly = true)
+    public List<RoomTypeDto> getAllRoomTypesWithPriceInRange(Long checkInDate, Long checkOutDate, Integer hotelId) {
+        List<RoomType> roomTypes = roomTypeRepository.findAllByHotelId(hotelId);
+        List<RoomTypeDto> roomTypeDtos = new ArrayList<>();
+        for (RoomType roomType : roomTypes) {
+            RoomTypeDto roomTypeDto = modelMapper.map(roomType, RoomTypeDto.class);
+            List<RoomPrice> roomPrices = roomTypePriceRepository.findAllRoomPricesInRange(roomType.getId(), checkInDate-1, checkOutDate+1);
+            roomTypeDto.setRoomPrices(List.of(modelMapper.map(roomPrices, RoomPriceDto[].class)));
+            roomTypeDtos.add(roomTypeDto);
+        }
         return roomTypeDtos;
     }
     @Transactional(readOnly = true)
@@ -186,7 +201,10 @@ public class RoomService {
         for (IRoomDto iRoomDto : availableRooms) {
             RoomDto roomDto = populateRoomDto(iRoomDto);
             RoomType roomType = roomTypeRepository.findById(roomDto.getRoomType().getId()).orElseThrow(()->new NotFoundException("Lỗi"));
-            roomDto.setRoomType(modelMapper.map(roomType, RoomTypeDto.class));
+            RoomTypeDto roomTypeDto = modelMapper.map(roomType, RoomTypeDto.class);
+            RoomPrice roomPrice = roomTypePriceRepository.findByRoomTypeIdAndDate(roomType.getId(), checkInDate);
+            if (roomPrice != null) roomTypeDto.setPriceToday(roomPrice.getPrice());
+            roomDto.setRoomType(roomTypeDto);
             //lấy tiện ích
             List<IConsumableDto> consumableDtos = consumableRepository.findConsumablesByRoomId(roomDto.getId());
             List<ConsumableDto> consumableDtos1 = List.of(modelMapper.map(consumableDtos, ConsumableDto[].class));
@@ -232,6 +250,19 @@ public class RoomService {
         }
 
         return roomDtos;
+    }
+
+    @Transactional
+    public RoomPriceDto updatePriceRoomType(RoomPriceDto roomPriceDto) {
+        RoomPrice roomPrice = roomTypePriceRepository.findByRoomTypeIdAndDate(roomPriceDto.getRoomTypeId(), roomPriceDto.getDate());
+        if (roomPrice == null) {
+            roomPrice = new RoomPrice();
+            roomPrice.setRoomTypeId(roomPriceDto.getRoomTypeId());
+            roomPrice.setDate(roomPriceDto.getDate());
+        }
+        roomPrice.setPrice(roomPriceDto.getPrice());
+        RoomPrice roomPrice1 = roomTypePriceRepository.save(roomPrice);
+        return modelMapper.map(roomPrice1, RoomPriceDto.class);
     }
 
 }

@@ -55,7 +55,9 @@ public class SecurityConfiguration {
 
                         .requestMatchers(HttpMethod.GET, "/admin/rooms/roomtype").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
                         .requestMatchers(HttpMethod.POST, "/admin/rooms/roomtype").hasAnyAuthority(RoleType.ADMIN.name())
-
+                        .requestMatchers(HttpMethod.GET, "/admin/rooms/roomtype/price").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
+                        .requestMatchers(HttpMethod.PUT, "/admin/rooms/roomtype/price").hasAnyAuthority(RoleType.ADMIN.name())
+                        
                         .requestMatchers(HttpMethod.GET, "/admin/rooms/getall").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
                         .requestMatchers(HttpMethod.GET, "/admin/rooms/{id}").permitAll()
                         .requestMatchers(HttpMethod.POST, "/admin/rooms/create").hasAnyAuthority(RoleType.ADMIN.name())
@@ -109,24 +111,11 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/api/search/room/avai").permitAll()
                         .requestMatchers(HttpMethod.POST, "/admin/auth/register-admin").permitAll()
 
+                        .requestMatchers(HttpMethod.GET, "/admin/employee/get-employee-info").hasAnyAuthority(RoleType.BAR_COUNTER.name(), RoleType.RESTAURANT_COUNTER.name(), RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name(), RoleType.WAREHOUSE_MANAGER.name(), RoleType.STAFF_MANAGER.name(), RoleType.CUSTOMER_MANAGER.name(), RoleType.SERVICE_MANAGER.name(), RoleType.REPORT_MANAGER.name(), RoleType.INVOICE_MANAGER.name(), RoleType.HOTEL_INFO_MANAGER.name(), RoleType.SERVICE_COUNTER.name())
                         .requestMatchers(HttpMethod.GET, "/admin/employee/getall2").hasAnyAuthority(RoleType.ADMIN.name())
                         .requestMatchers(HttpMethod.GET, "/admin/employee/{id}").hasAnyAuthority(RoleType.ADMIN.name())
                         .requestMatchers(HttpMethod.POST, "/admin/employee/create").hasAnyAuthority(RoleType.ADMIN.name())
                         .requestMatchers(HttpMethod.PUT, "/admin/employee/update/{id}").hasAnyAuthority(RoleType.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET, "/admin/employee/getInfoEmployee").hasAnyAuthority(
-                            RoleType.BAR_COUNTER.name(),
-                            RoleType.RESTAURANT_COUNTER.name(),
-                            RoleType.ADMIN.name(),
-                            RoleType.RECEPTIONIST.name(),
-                            RoleType.WAREHOUSE_MANAGER.name(),
-                            RoleType.STAFF_MANAGER.name(),
-                            RoleType.CUSTOMER_MANAGER.name(), 
-                            RoleType.SERVICE_MANAGER.name(),
-                            RoleType.REPORT_MANAGER.name(),
-                            RoleType.INVOICE_MANAGER.name(),
-                            RoleType.HOTEL_INFO_MANAGER.name(),
-                            RoleType.SERVICE_COUNTER.name()
-                        )
 
                         .requestMatchers(HttpMethod.GET, "/admin/service/service-type-list").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name(), RoleType.BAR_COUNTER.name(), RoleType.RESTAURANT_COUNTER.name())
                         .requestMatchers(HttpMethod.POST, "/admin/service/create-service-type").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.SERVICE_MANAGER.name())

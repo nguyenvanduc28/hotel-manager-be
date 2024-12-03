@@ -314,4 +314,24 @@ public class RoomController {
                 .build());
     }
 
+    @GetMapping("roomtype/price")
+    public ResponseEntity<ResponseObject> getAllRoomTypesWithPriceInRange(@RequestParam Long checkInDate, @RequestParam Long checkOutDate, @AuthenticationPrincipal CustomUserDetails user) {
+        List<RoomTypeDto> roomTypeDtos = roomService.getAllRoomTypesWithPriceInRange(checkInDate, checkOutDate, user.getUser().getHotelId());
+        return ResponseEntity.ok(ResponseObject.builder()
+                .data(roomTypeDtos)
+                .message("Fetched all room types with price in range")
+                .responseCode(HttpStatus.OK.value())
+                .build());
+    }
+
+    @PutMapping("roomtype/price")
+    public ResponseEntity<ResponseObject> updatePriceRoomType(@RequestBody RoomPriceDto roomPriceDto) {
+        RoomPriceDto roomPriceDtos1 = roomService.updatePriceRoomType(roomPriceDto);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .data(roomPriceDtos1)
+                .message("Price updated successfully")
+                .responseCode(HttpStatus.OK.value())
+                .build());
+    }
+
 }

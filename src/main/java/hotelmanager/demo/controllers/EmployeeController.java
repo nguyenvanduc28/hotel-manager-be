@@ -22,7 +22,7 @@ public class EmployeeController {
     @Autowired
     private EmployeeService employeeService;
 
-    @GetMapping("getall")
+    @GetMapping("getall2")
     public ResponseEntity<ResponseObject> getAllEmployees(@AuthenticationPrincipal CustomUserDetails user) {
         List<Employee> employees = employeeService.getAllEmployees(user.getUser().getHotelId());
         return ResponseEntity.ok(ResponseObject.builder()
@@ -31,7 +31,7 @@ public class EmployeeController {
                 .responseCode(HttpStatus.OK.value())
                 .build());
     }
-    @GetMapping("getInfoEmployee")
+    @GetMapping("get-employee-info")
     public ResponseEntity<ResponseObject> getEmployeeInfo(@AuthenticationPrincipal CustomUserDetails user) {
         EmployeeResponseDto employee = employeeService.getEmployeeByUserId(user);
         return ResponseEntity.ok(ResponseObject.builder()
