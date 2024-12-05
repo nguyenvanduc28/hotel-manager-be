@@ -52,6 +52,8 @@ public class BookingService {
     private OrderItemRepository orderItemRepository;
     @Autowired
     private BookingServiceOrderRepository bookingServiceOrderRepository;
+    @Autowired
+    private RoomTypePriceRepository roomPriceRepository;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -70,6 +72,9 @@ public class BookingService {
     }
 
     private void enrichBookingDto(BookingDto bookingDto) {
+        Long checkInDate = bookingDto.getCheckInDate();
+        Long checkOutDate = bookingDto.getCheckOutDate();
+
         // Get rooms
         List<IRoomDto> roomDtos = bookingRepository.findAllRoomsByBookingId(bookingDto.getId());
         List<RoomDto> mappedRooms = roomDtos.stream()
@@ -77,7 +82,13 @@ public class BookingService {
                 RoomDto mappedRoom = modelMapper.map(roomDto, RoomDto.class);
                 RoomType roomType = roomTypeRepository.findById(mappedRoom.getRoomType().getId())
                     .orElseThrow(() -> new NotFoundException("Room type not found"));
-                mappedRoom.setRoomType(modelMapper.map(roomType, RoomTypeDto.class));
+                RoomPrice roomPrice = roomPriceRepository.findByRoomTypeIdAndDate(roomType.getId(), checkInDate);
+                RoomTypeDto roomTypeDto = modelMapper.map(roomType, RoomTypeDto.class);
+                if (roomPrice != null) {
+                    roomTypeDto.setPriceToday(roomPrice.getPrice());
+                }
+
+                mappedRoom.setRoomType(roomTypeDto);
                 return mappedRoom;
             })
             .toList();

@@ -128,6 +128,8 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.PUT, "/admin/service/update-booking-service-order-status").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name(), RoleType.BAR_COUNTER.name(), RoleType.RESTAURANT_COUNTER.name())
                         .requestMatchers(HttpMethod.GET, "/admin/service/booking-service-order-list").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name(), RoleType.BAR_COUNTER.name(), RoleType.RESTAURANT_COUNTER.name())
                         .requestMatchers(HttpMethod.GET, "/admin/service/service-count").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.SERVICE_MANAGER.name(), RoleType.SERVICE_COUNTER.name(), RoleType.BAR_COUNTER.name(), RoleType.RESTAURANT_COUNTER.name())
+
+                        .requestMatchers(HttpMethod.POST, "/api/reports/general").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.REPORT_MANAGER.name())
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
