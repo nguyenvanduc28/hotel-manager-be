@@ -536,7 +536,7 @@ public class BookingService {
         }
 
         BookingServiceOrder bookingServiceOrder = modelMapper.map(bookingServiceOrderDto, BookingServiceOrder.class);
-        Long orderCreatedAt = Instant.now().getEpochSecond() * 1000;
+        Long orderCreatedAt = Instant.now().getEpochSecond();
         bookingServiceOrder.setBookingServiceId(bookingService.getId());
         bookingServiceOrder.setOrderCreatedAt(orderCreatedAt);
         bookingServiceOrder.setServiceTypeId(bookingServiceOrderDto.getServiceTypeId());
