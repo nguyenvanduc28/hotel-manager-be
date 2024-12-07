@@ -177,5 +177,10 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
             WHERE br.booking_id = :bookingId
             """, nativeQuery = true)
     List<IRoomDto> findAllRoomsByBookingId(@Param("bookingId") Integer bookingId);
-    
+
+    @Query(value = """
+            SELECT * FROM bookings b
+            WHERE b.hotel_id = :hotelId AND b.booking_date BETWEEN :startTime AND :endTime
+            """, nativeQuery = true)
+    List<Booking> findAllByHotelIdAndBookingDateBetween(@Param("startTime") Long startTime, @Param("endTime") Long endTime, @Param("hotelId") Integer hotelId);
 }

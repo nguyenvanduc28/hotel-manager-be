@@ -58,4 +58,27 @@ public interface ReportRepository extends JpaRepository<Booking, Integer> {
         WHERE b.booking_date BETWEEN ?1 AND ?2 AND b.hotel_id = ?3
     """, nativeQuery = true)
     Double getConsumableRevenue(Long startDate, Long endDate, Integer hotelId);
+
+    // Tỷ lệ lấp đầy trung bình của loại phòng
+    @Query(value = """
+        SELECT COALESCE(
+            AVG(
+                CAST(
+                    (SELECT COUNT(*) 
+                    FROM bookings b2 
+                    WHERE b2.room_id = r.id 
+                    AND b2.status = 'Đã hoàn tất'
+                    AND b2.booking_date BETWEEN :startDate AND :endDate)
+                AS FLOAT) / 
+                (
+                    EXTRACT(EPOCH FROM (TO_TIMESTAMP(:endDate/1000) - TO_TIMESTAMP(:startDate/1000)))/86400
+                )
+            ) * 100, 
+            0
+        )
+        FROM rooms r
+        WHERE r.hotel_id = :hotelId
+        AND r.room_type_id = :roomTypeId
+        """, nativeQuery = true)
+    Double getRoomTypeOccupancyRate(Long startDate, Long endDate, Integer hotelId, Integer roomTypeId);
 }

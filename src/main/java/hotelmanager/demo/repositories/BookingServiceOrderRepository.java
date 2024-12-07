@@ -33,4 +33,8 @@ public interface BookingServiceOrderRepository extends JpaRepository<BookingServ
     @Query("SELECT bso FROM BookingServiceOrder bso WHERE bso.hotelId = :hotelId AND bso.status != 'Đã phục vụ' AND bso.serviceTypeId = :serviceTypeId")
     List<BookingServiceOrder> findAllOrderAvailableWithServiceTypeId(@Param("hotelId") Integer hotelId, @Param("serviceTypeId") Integer serviceTypeId);
 
+    @Query(value = "SELECT * FROM booking_service_order bso WHERE bso.hotel_id = :hotelId AND bso.service_type_id = :serviceTypeId AND bso.order_created_at BETWEEN :startTime AND :endTime",
+        nativeQuery = true)
+    List<BookingServiceOrder> findAllByHotelIdAndServiceTypeIdAndOrderCreatedAtBetween(@Param("hotelId") Integer hotelId, @Param("serviceTypeId") Integer serviceTypeId, @Param("startTime") Long startTime, @Param("endTime") Long endTime);
+
 } 

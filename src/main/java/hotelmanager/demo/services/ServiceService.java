@@ -187,4 +187,44 @@ public class ServiceService {
         serviceCountDto.setNumOfReadyToServeOrder(orders.stream().filter(order -> order.getStatus().equals(BookingServiceOrderStatus.READY_TO_SERVE)).count());
         return serviceCountDto;
     }
+
+    // lấy order theo thời gian
+    @Transactional
+    public List<BookingServiceOrderDto> getBookingServiceOrderByTimePeriod(int hotelId, int serviceTypeId, Long startTime, Long endTime) {
+        List<BookingServiceOrder> bookingServiceOrders = bookingServiceOrderRepository
+            .findAllByHotelIdAndServiceTypeIdAndOrderCreatedAtBetween(hotelId, serviceTypeId, startTime, endTime);
+        List<BookingServiceOrderDto> bookingServiceOrderDtos = new ArrayList<>();
+
+        for (BookingServiceOrder bookingServiceOrder : bookingServiceOrders) {
+            BookingServiceOrderDto orderDto = modelMapper.map(bookingServiceOrder, BookingServiceOrderDto.class);
+            
+            // Get order items for this booking
+            List<OrderItem> orderItems = orderItemRepository.findAllByOrderId(bookingServiceOrder.getId());
+            List<OrderItemDto> orderItemDtos = new ArrayList<>();
+
+            for (OrderItem orderItem : orderItems) {
+                OrderItemDto itemDto = modelMapper.map(orderItem, OrderItemDto.class);
+                
+                // Get service item details
+                ServiceItem serviceItem = serviceItemRepository.findById(orderItem.getServiceItemId())
+                        .orElseThrow(() -> new NotFoundException("Service item not found"));
+                ServiceItemDto serviceItemDto = modelMapper.map(serviceItem, ServiceItemDto.class);
+                
+                // Get service type details
+                ServiceHotel serviceType = serviceRepository.findById(serviceItem.getServiceTypeId())
+                        .orElseThrow(() -> new NotFoundException("Service type not found"));
+                ServiceDto serviceTypeDto = modelMapper.map(serviceType, ServiceDto.class);
+                
+                // Set relationships
+                serviceItemDto.setServiceType(serviceTypeDto);
+                itemDto.setServiceItem(serviceItemDto);
+                orderItemDtos.add(itemDto);
+            }
+
+            orderDto.setOrderItems(orderItemDtos);
+            bookingServiceOrderDtos.add(orderDto);
+        }
+
+        return bookingServiceOrderDtos;
+    }
 }

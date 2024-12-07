@@ -656,4 +656,17 @@ public class BookingService {
         bookingServiceOrderRepository.deleteById(orderId);
     }
 
+    @Transactional
+    public List<BookingDto> getBookingsWithTimePeriod(Long startTime, Long endTime, Integer hotelId) {
+        List<Booking> bookings = bookingRepository.findAllByHotelIdAndBookingDateBetween(startTime, endTime, hotelId);
+        List<BookingDto> bookingDtos = new ArrayList<>();
+
+        for (Booking booking: bookings) {
+            BookingDto bookingDto = modelMapper.map(booking, BookingDto.class);
+            enrichBookingDto(bookingDto);
+            bookingDtos.add(bookingDto);
+        }
+
+        return bookingDtos;
+    }
 }
