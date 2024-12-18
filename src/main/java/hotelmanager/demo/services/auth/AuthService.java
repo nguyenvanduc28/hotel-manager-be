@@ -106,10 +106,12 @@ public class AuthService {
         userEntity.setPassword(passwordEncoder.encode(authDto.getPassword()));
         
         // Get admin role
-        Role adminRole = roleRepository.findByName("ADMIN");
-        
         List<Role> roles = new ArrayList<>();
-        roles.add(adminRole);
+        for (RoleDto roleDto: authDto.getRoles()) {
+            Role role = roleRepository.findById(roleDto.getId())
+                    .orElseThrow(() -> new NotFoundException("role not found: "+roleDto.getName()));
+            roles.add(role);
+        }
         userEntity.setRoles(roles);
         
 
