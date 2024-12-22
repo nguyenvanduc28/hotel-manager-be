@@ -60,6 +60,7 @@ public class SecurityConfiguration {
                         
                         .requestMatchers(HttpMethod.GET, "/admin/rooms/getall").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
                         .requestMatchers(HttpMethod.GET, "/admin/rooms/{id}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/admin/rooms/detail/{id}").hasAnyAuthority(RoleType.ADMIN.name())
                         .requestMatchers(HttpMethod.POST, "/admin/rooms/create").hasAnyAuthority(RoleType.ADMIN.name())
                         .requestMatchers(HttpMethod.PUT, "/admin/rooms/update").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
 

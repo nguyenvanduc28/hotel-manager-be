@@ -195,6 +195,14 @@ public class RoomService {
         return roomDto;
     }
     @Transactional(readOnly = true)
+    public RoomDto getRoomByIdAndHotelId(Integer id, Integer hotelId) {
+        IRoomDto iRoomDto = roomRepository.findRoomByIdAndHotelId(id, hotelId);
+        if (iRoomDto == null) throw new NotFoundException("Không tìm thấy room");
+        RoomDto roomDto = populateRoomDto(iRoomDto);
+
+        return roomDto;
+    }
+    @Transactional(readOnly = true)
     public List<RoomDto> getAvailableRooms(Long checkInDate, Long checkOutDate, Integer hotelId) {
         List<IRoomDto> availableRooms = roomRepository.findAvailableRooms(checkInDate, checkOutDate, hotelId);
         List<RoomDto> roomDtos = new ArrayList<>();

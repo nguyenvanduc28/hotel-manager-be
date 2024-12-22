@@ -281,6 +281,15 @@ public class RoomController {
                 .responseCode(HttpStatus.OK.value())
                 .build());
     }
+    @GetMapping("/detail/{id}")
+    public ResponseEntity<ResponseObject> getRoomDetailForAdmin(@PathVariable Integer id, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        RoomDto roomDtos = roomService.getRoomByIdAndHotelId(id, userDetails.getUser().getHotelId());
+        return ResponseEntity.ok(ResponseObject.builder()
+                .data(roomDtos)
+                .message("Fetched room by id")
+                .responseCode(HttpStatus.OK.value())
+                .build());
+    }
     @GetMapping("equipment-category")
     public ResponseEntity<ResponseObject> getAllEquipmentCategories(
             @AuthenticationPrincipal CustomUserDetails user
