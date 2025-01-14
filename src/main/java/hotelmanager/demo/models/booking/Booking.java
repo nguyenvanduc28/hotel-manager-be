@@ -1,10 +1,10 @@
-package hotelmanager.demo.models;
+package hotelmanager.demo.models.booking;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import hotelmanager.demo.models.BaseEntity;
+import hotelmanager.demo.models.Customer;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity

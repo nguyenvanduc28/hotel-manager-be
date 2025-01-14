@@ -2,12 +2,11 @@ package hotelmanager.demo.services;
 
 import hotelmanager.demo.dto.EmployeeDto;
 import hotelmanager.demo.dto.EmployeeResponseDto;
-import hotelmanager.demo.dto.auth.AuthDto;
 import hotelmanager.demo.dto.auth.RoleDto;
 import hotelmanager.demo.dto.auth.UserInfoDto;
 import hotelmanager.demo.exceptions.NotFoundException;
 import hotelmanager.demo.models.Employee;
-import hotelmanager.demo.models.Role;
+import hotelmanager.demo.models.auth.Role;
 import hotelmanager.demo.models.enums.RoleType;
 import hotelmanager.demo.repositories.EmployeeRepository;
 import hotelmanager.demo.repositories.HotelRepository;
@@ -17,14 +16,12 @@ import hotelmanager.demo.services.auth.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import hotelmanager.demo.models.Hotel;
-import hotelmanager.demo.models.UserEntity;
+import hotelmanager.demo.models.auth.UserEntity;
 import org.modelmapper.ModelMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service

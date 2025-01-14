@@ -31,6 +31,7 @@ public class SecurityConfiguration {
 //                        .requestMatchers("/**").permitAll()
                         .requestMatchers("/admin/auth/**").permitAll()
 //                        .requestMatchers("/admin/upload/**").hasAuthority(RoleType.ADMIN.name())
+                        .requestMatchers("/api/email/send").permitAll()
 //
                         .requestMatchers(HttpMethod.GET, "/admin/rooms/consumable-category").hasAnyAuthority(RoleType.ADMIN.name(), RoleType.RECEPTIONIST.name())
                         .requestMatchers(HttpMethod.POST, "/admin/rooms/consumable-category").hasAnyAuthority(RoleType.ADMIN.name())

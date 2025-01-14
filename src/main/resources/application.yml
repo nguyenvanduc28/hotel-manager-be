@@ -13,6 +13,19 @@ spring:
     database-platform: org.hibernate.dialect.MySQL8Dialect
   main:
     web-application-type: servlet
+  mail:
+    host: smtp.ethereal.email
+    port: 587
+    username: ducduc28052002@gmail.com
+    password: fhachjsmgztbbibn
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+    encoding: UTF-8
 
 application:
   security:
@@ -28,3 +41,4 @@ cloudinary:
   api-key: 392866353484864
   api-secret: 5ugBXyXbRaXV0bdKxHJvC2woAAY
   secure: true
+#SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/hotel-manager;DATABASE_USERNAME=root;DATABASE_PASSWORD=;SECRET_KEY=50302229da4da8e5078c7e9307a56167e203f7defe7673ccc570852e65256201;JWT_EXPIRATION=86400000

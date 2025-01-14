@@ -1,7 +1,8 @@
-package hotelmanager.demo.models;
+package hotelmanager.demo.models.room;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import hotelmanager.demo.models.BaseEntity;
+import hotelmanager.demo.models.room.Room;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "room_types")
-public class RoomType extends BaseEntity{
+public class RoomType extends BaseEntity {
 
     private String name;
     private String description;

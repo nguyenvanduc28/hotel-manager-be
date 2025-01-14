@@ -3,7 +3,7 @@ package hotelmanager.demo.repositories;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import hotelmanager.demo.models.Booking;
+import hotelmanager.demo.models.booking.Booking;
 
 @Repository
 public interface ReportRepository extends JpaRepository<Booking, Integer> {

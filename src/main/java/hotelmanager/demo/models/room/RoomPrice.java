@@ -1,5 +1,6 @@
-package hotelmanager.demo.models;
+package hotelmanager.demo.models.room;
 
+import hotelmanager.demo.models.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,7 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "room_prices")
-public class RoomPrice extends BaseEntity{
+public class RoomPrice extends BaseEntity {
     private Long date;
     private Long price;
     private Integer roomTypeId;

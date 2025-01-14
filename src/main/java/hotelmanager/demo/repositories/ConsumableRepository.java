@@ -1,7 +1,7 @@
 package hotelmanager.demo.repositories;
 
 import hotelmanager.demo.dto.roomDtos.IConsumableDto;
-import hotelmanager.demo.models.Consumable;
+import hotelmanager.demo.models.room.Consumable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

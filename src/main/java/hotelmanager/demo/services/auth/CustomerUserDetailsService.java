@@ -1,14 +1,13 @@
 package hotelmanager.demo.services.auth;
 
 import hotelmanager.demo.exceptions.NotFoundException;
-import hotelmanager.demo.models.Role;
-import hotelmanager.demo.models.UserEntity;
+import hotelmanager.demo.models.auth.Role;
+import hotelmanager.demo.models.auth.UserEntity;
 import hotelmanager.demo.repositories.UserRepository;
 import hotelmanager.demo.security.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;

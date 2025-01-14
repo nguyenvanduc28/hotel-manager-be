@@ -1,10 +1,9 @@
 package hotelmanager.demo.dto.auth;
 
-import hotelmanager.demo.models.Role;
+import hotelmanager.demo.models.auth.Role;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.sql.Date;
 import java.util.List;
 
 @Getter

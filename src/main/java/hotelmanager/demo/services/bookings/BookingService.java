@@ -5,11 +5,19 @@ import hotelmanager.demo.dto.bookingDtos.*;
 import hotelmanager.demo.dto.roomDtos.*;
 import hotelmanager.demo.exceptions.NotFoundException;
 import hotelmanager.demo.models.*;
+import hotelmanager.demo.models.booking.*;
 import hotelmanager.demo.models.enums.BookingStatus;
 import hotelmanager.demo.models.enums.BookingServiceOrderStatus;
 
 import hotelmanager.demo.models.enums.EquipmentStatus;
+import hotelmanager.demo.models.room.Room;
+import hotelmanager.demo.models.room.RoomPrice;
+import hotelmanager.demo.models.room.RoomType;
+import hotelmanager.demo.models.service.ServiceHotel;
+import hotelmanager.demo.models.service.ServiceItem;
 import hotelmanager.demo.repositories.*;
+import hotelmanager.demo.services.EmailService;
+import jakarta.mail.MessagingException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,6 +62,8 @@ public class BookingService {
     private BookingServiceOrderRepository bookingServiceOrderRepository;
     @Autowired
     private RoomTypePriceRepository roomPriceRepository;
+    @Autowired
+    private EmailService emailService;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -226,7 +236,7 @@ public class BookingService {
         booking.setCancellationPolicy(bookingDto.getCancellationPolicy());
         booking.setCanceledAt(bookingDto.getCanceledAt());
         booking.setIsGuaranteed(bookingDto.getIsGuaranteed());
-        booking.setNumberOfAdults(booking.getNumberOfAdults());
+        booking.setNumberOfAdults(bookingDto.getNumberOfAdults());
         booking.setNumberOfChildren(bookingDto.getNumberOfChildren());
         booking.setHotelId(hotelId);
 
@@ -266,8 +276,14 @@ public class BookingService {
         bookingDto1.setCanceledAt(booking1.getCanceledAt());
         bookingDto1.setIsGuaranteed(booking1.getIsGuaranteed());
         bookingDto1.setCustomer(modelMapper.map(booking1.getCustomer(), CustomerDto.class));
-        bookingDto1.setRooms(bookingDto.getRooms()); //xử lý hơi ngoo
-
+        bookingDto1.setRooms(bookingDto.getRooms());
+        bookingDto1.setNumberOfAdults(booking1.getNumberOfAdults());
+        bookingDto1.setNumberOfChildren(booking1.getNumberOfChildren());
+        try {
+            emailService.sendBookingConfirmationEmail(customer.getEmail(), bookingDto1, hotelId);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
         return bookingDto1;
     }
 
@@ -535,8 +551,11 @@ public class BookingService {
             throw new NotFoundException("Không tìm thấy booking service");
         }
 
+
         BookingServiceOrder bookingServiceOrder = modelMapper.map(bookingServiceOrderDto, BookingServiceOrder.class);
         Long orderCreatedAt = Instant.now().getEpochSecond();
+        bookingServiceOrderDto.setOrderCreatedAt(orderCreatedAt);
+
         bookingServiceOrder.setBookingServiceId(bookingService.getId());
         bookingServiceOrder.setOrderCreatedAt(orderCreatedAt);
         bookingServiceOrder.setServiceTypeId(bookingServiceOrderDto.getServiceTypeId());
@@ -572,6 +591,12 @@ public class BookingService {
             orderItem.setOrderId(savedOrder.getId());
         }
         orderItemRepository.saveAll(orderItems);
+        String emailTo = customerRepository.findEmailByBookingId(bookingId);
+        try {
+            emailService.sendNewOrderConfirmationEmail(emailTo, bookingServiceOrderDto, hotelId);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
 
         return modelMapper.map(savedOrder, BookingServiceOrderDto.class);
     }

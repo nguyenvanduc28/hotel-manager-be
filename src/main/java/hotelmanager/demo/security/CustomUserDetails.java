@@ -1,6 +1,6 @@
 package hotelmanager.demo.security;
 
-import hotelmanager.demo.models.UserEntity;
+import hotelmanager.demo.models.auth.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;

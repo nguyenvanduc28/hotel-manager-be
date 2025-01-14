@@ -1,8 +1,8 @@
-package hotelmanager.demo.models;
+package hotelmanager.demo.models.room;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import hotelmanager.demo.models.BaseEntity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "consumable_categories")
-public class ConsumableCategory extends BaseEntity{
+public class ConsumableCategory extends BaseEntity {
 
     @NonNull
     private String name;

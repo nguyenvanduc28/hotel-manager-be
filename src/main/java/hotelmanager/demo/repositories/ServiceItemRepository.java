@@ -1,6 +1,6 @@
 package hotelmanager.demo.repositories;
 
-import hotelmanager.demo.models.ServiceItem;
+import hotelmanager.demo.models.service.ServiceItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;

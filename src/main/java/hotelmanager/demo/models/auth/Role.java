@@ -1,6 +1,8 @@
-package hotelmanager.demo.models;
+package hotelmanager.demo.models.auth;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import hotelmanager.demo.models.BaseEntity;
+import hotelmanager.demo.models.auth.UserEntity;
 import hotelmanager.demo.models.enums.RoleType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

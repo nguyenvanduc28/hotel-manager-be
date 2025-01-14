@@ -2,8 +2,8 @@ package hotelmanager.demo.services.rooms;
 
 import hotelmanager.demo.dto.roomDtos.*;
 import hotelmanager.demo.exceptions.NotFoundException;
-import hotelmanager.demo.models.Equipment;
-import hotelmanager.demo.models.EquipmentCategory;
+import hotelmanager.demo.models.room.Equipment;
+import hotelmanager.demo.models.room.EquipmentCategory;
 import hotelmanager.demo.repositories.EquipmentCategoryRepository;
 import hotelmanager.demo.repositories.EquipmentRepository;
 import hotelmanager.demo.repositories.RoomRepository;
@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class EquipmentService {

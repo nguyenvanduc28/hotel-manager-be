@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 
-import hotelmanager.demo.models.BookingServiceOrder;
+import hotelmanager.demo.models.booking.BookingServiceOrder;
 
 @Repository
 public interface BookingServiceOrderRepository extends JpaRepository<BookingServiceOrder, Integer> {

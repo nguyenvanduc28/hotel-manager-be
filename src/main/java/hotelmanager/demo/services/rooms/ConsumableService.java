@@ -5,9 +5,8 @@ import hotelmanager.demo.dto.roomDtos.ConsumableDto;
 import hotelmanager.demo.dto.roomDtos.IConsumableDto;
 import hotelmanager.demo.dto.roomDtos.RoomDto;
 import hotelmanager.demo.exceptions.NotFoundException;
-import hotelmanager.demo.models.Consumable;
-import hotelmanager.demo.models.ConsumableCategory;
-import hotelmanager.demo.models.Room;
+import hotelmanager.demo.models.room.Consumable;
+import hotelmanager.demo.models.room.ConsumableCategory;
 import hotelmanager.demo.repositories.ConsumableCategoryRepository;
 import hotelmanager.demo.repositories.ConsumableRepository;
 import hotelmanager.demo.repositories.RoomRepository;
@@ -18,8 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ConsumableService {

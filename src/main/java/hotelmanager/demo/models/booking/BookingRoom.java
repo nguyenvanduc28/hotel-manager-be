@@ -1,7 +1,9 @@
-package hotelmanager.demo.models;
+package hotelmanager.demo.models.booking;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import hotelmanager.demo.models.BaseEntity;
+import hotelmanager.demo.models.booking.Booking;
+import hotelmanager.demo.models.room.Room;
 import jakarta.persistence.*;
 import lombok.*;
 

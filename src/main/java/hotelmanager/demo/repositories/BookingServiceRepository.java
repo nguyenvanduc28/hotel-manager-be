@@ -1,6 +1,6 @@
 package hotelmanager.demo.repositories;
 
-import hotelmanager.demo.models.BookingServiceEntity;
+import hotelmanager.demo.models.booking.BookingServiceEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 

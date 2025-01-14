@@ -1,6 +1,6 @@
-package hotelmanager.demo.models;
-import com.fasterxml.jackson.annotation.JsonBackReference;
+package hotelmanager.demo.models.room;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import hotelmanager.demo.models.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "rooms")
-public class Room extends BaseEntity{
+public class Room extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "room_type_id")

@@ -2,15 +2,13 @@ package hotelmanager.demo.services.reports;
 
 import hotelmanager.demo.dto.BookingServiceOrderDto;
 import hotelmanager.demo.dto.OrderItemDto;
-import hotelmanager.demo.dto.ServiceDto;
 import hotelmanager.demo.dto.ServiceItemDto;
 import hotelmanager.demo.dto.bookingDtos.BookingDto;
 import hotelmanager.demo.dto.reportDtos.*;
 import hotelmanager.demo.dto.roomDtos.RoomDto;
 import hotelmanager.demo.dto.roomDtos.RoomTypeDto;
-import hotelmanager.demo.models.BookingServiceOrder;
-import hotelmanager.demo.models.RoomType;
-import hotelmanager.demo.models.ServiceHotel;
+import hotelmanager.demo.models.room.RoomType;
+import hotelmanager.demo.models.service.ServiceHotel;
 import hotelmanager.demo.models.enums.BookingStatus;
 import hotelmanager.demo.services.bookings.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;

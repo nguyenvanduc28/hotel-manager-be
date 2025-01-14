@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import hotelmanager.demo.models.OrderItem;
+import hotelmanager.demo.models.booking.OrderItem;
 
 @Repository
 public interface OrderItemRepository extends JpaRepository<OrderItem, Integer> {

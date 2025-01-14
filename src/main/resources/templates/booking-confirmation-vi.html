@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Xác nhận đặt phòng</title>
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+    }
+    .container {
+        width: 80%;
+        margin: 0 auto;
+        border: 1px solid #ddd;
+        padding: 20px;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+    }
+    h2 {
+        color: #2c3e50;
+    }
+    .info {
+        margin-bottom: 20px;
+    }
+    .info p {
+        margin: 5px 0;
+    }
+    .room-list {
+        margin-top: 20px;
+        border-collapse: collapse;
+        width: 100%;
+    }
+    .room-list th, .room-list td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+    }
+    .room-list th {
+        background-color: #2c3e50;
+        color: #fff;
+    }
+    .hotel-info {
+        margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h2>Xác nhận đặt phòng</h2>
+
+  <!-- Hotel Information -->
+  <div class="hotel-info">
+    <p><strong>Khách sạn:</strong> <span th:text="${hotelName}">Tên khách sạn</span></p>
+    <p><strong>Đánh giá:</strong> <span th:text="${hotelRating}">5 sao</span></p>
+    <p><strong>Thành phố:</strong> <span th:text="${hotelCity}">Hà Nội</span></p>
+    <p><strong>Địa chỉ:</strong> <span th:text="${hotelAddress}">Số 1, Phố XYZ, Hà Nội</span></p>
+    <p><strong>Số điện thoại:</strong> <span th:text="${hotelPhoneNumber}">0123456789</span></p>
+    <p><strong>Email:</strong> <span th:text="${hotelEmail}">contact@hotel.com</span></p>
+    <p><strong>Website:</strong> <a th:href="${hotelWebsite}" th:text="${hotelWebsite}">Website</a></p>
+  </div>
+
+  <p>Chào <strong th:text="${customerName}">Tên khách hàng</strong>,</p>
+  <p>Cảm ơn bạn đã đặt phòng tại khách sạn của chúng tôi! Dưới đây là thông tin chi tiết về đặt phòng của bạn:</p>
+  <div class="info">
+    <p><strong>Ngày đặt phòng:</strong> <span th:text="${bookingDate}">2025-01-10</span></p>
+    <p><strong>Ngày nhận phòng:</strong> <span th:text="${checkInDate}">2025-01-20</span></p>
+    <p><strong>Ngày trả phòng:</strong> <span th:text="${checkOutDate}">2025-01-25</span></p>
+    <p><strong>Số người lớn:</strong> <span th:text="${numberOfAdults}">2</span></p>
+    <p><strong>Số trẻ em:</strong> <span th:text="${numberOfChildren}">1</span></p>
+  </div>
+
+  <!-- Room Details -->
+  <table class="room-list">
+    <thead>
+    <tr>
+      <th>STT</th>
+      <th>Tên phòng</th>
+      <th>Loại phòng</th>
+      <th>Giá mỗi đêm</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="room, iterStat : ${rooms}">
+      <td th:text="${iterStat.index + 1}">1</td>
+      <td th:text="${room.roomName}">Phòng Deluxe</td>
+      <td th:text="${room.roomType}">Deluxe</td>
+      <td th:text="${room.pricePerNight}">1,000,000 VND</td>
+    </tr>
+    </tbody>
+  </table>
+
+  <p>Chúng tôi rất mong được chào đón bạn tại khách sạn. Nếu có bất kỳ câu hỏi nào, vui lòng liên hệ với chúng tôi qua email hoặc số điện thoại hỗ trợ.</p>
+  <p>Trân trọng,<br>Đội ngũ hỗ trợ khách sạn</p>
+</div>
+</body>
+</html>

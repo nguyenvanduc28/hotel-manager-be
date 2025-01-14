@@ -1,8 +1,6 @@
 package hotelmanager.demo.dto.roomDtos;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import hotelmanager.demo.dto.BaseDto;
-import hotelmanager.demo.models.Room;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import hotelmanager.demo.dto.BookingServiceOrderDto;
-import hotelmanager.demo.models.BookingServiceOrder;
+import hotelmanager.demo.models.booking.BookingServiceOrder;
 import hotelmanager.demo.models.enums.BookingServiceOrderStatus;
 import hotelmanager.demo.repositories.BookingServiceOrderRepository;
 import org.modelmapper.ModelMapper;

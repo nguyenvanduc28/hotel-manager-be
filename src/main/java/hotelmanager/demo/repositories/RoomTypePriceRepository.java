@@ -1,6 +1,6 @@
 package hotelmanager.demo.repositories;
 
-import hotelmanager.demo.models.RoomPrice;
+import hotelmanager.demo.models.room.RoomPrice;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

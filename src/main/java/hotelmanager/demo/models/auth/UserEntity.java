@@ -1,6 +1,7 @@
-package hotelmanager.demo.models;
+package hotelmanager.demo.models.auth;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import hotelmanager.demo.models.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,7 +1,7 @@
 package hotelmanager.demo.repositories;
 
 import hotelmanager.demo.dto.bookingDtos.IBookingEquipmentDamagedDto;
-import hotelmanager.demo.models.BookingEquipmentDamaged;
+import hotelmanager.demo.models.booking.BookingEquipmentDamaged;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

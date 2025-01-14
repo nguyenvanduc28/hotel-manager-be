@@ -1,5 +1,6 @@
-package hotelmanager.demo.models;
+package hotelmanager.demo.models.booking;
 
+import hotelmanager.demo.models.BaseEntity;
 import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.Setter;

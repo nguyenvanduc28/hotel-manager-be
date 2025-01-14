@@ -1,10 +1,7 @@
 package hotelmanager.demo.controllers;
 
 import hotelmanager.demo.dto.ResponseObject;
-import hotelmanager.demo.dto.auth.AuthLoginDto;
-import hotelmanager.demo.dto.auth.AuthResponse;
 import hotelmanager.demo.dto.roomDtos.*;
-import hotelmanager.demo.models.UserEntity;
 import hotelmanager.demo.security.CustomUserDetails;
 import hotelmanager.demo.services.rooms.ConsumableService;
 import hotelmanager.demo.services.rooms.EquipmentService;
@@ -13,7 +10,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông báo Đơn hàng Mới</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        h2 {
+            color: #2c3e50;
+        }
+        .info {
+            margin-bottom: 20px;
+        }
+        .info p {
+            margin: 5px 0;
+        }
+        .order-items {
+            margin-top: 20px;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        .order-items th, .order-items td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        .order-items th {
+            background-color: #2c3e50;
+            color: #fff;
+        }
+        .total-price {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Thông báo Đơn hàng Mới</h2>
+    <p>Bạn đã tạo đơn dịch vụ mới tại khách sạn của chúng tôi. Dưới đây là chi tiết về đơn dịch vụ của bạn:</p>
+
+    <div class="info">
+        <p><strong>Ngày tạo đơn hàng:</strong> <span th:text="${orderCreatedAt}">2025-01-20 10:30</span></p>
+        <p><strong>Trạng thái đơn hàng:</strong> <span th:text="${status}">Chờ xử lý</span></p>
+        <p><strong>Ghi chú:</strong> <span th:text="${note}">Không có</span></p>
+    </div>
+
+    <h3>Danh sách Dịch vụ:</h3>
+    <table class="order-items">
+        <thead>
+        <tr>
+            <th>STT</th>
+            <th>Tên dịch vụ</th>
+            <th>Giá</th>
+            <th>Số lượng</th>
+            <th>Tổng giá</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item, iterStat : ${orderItems}">
+            <td th:text="${iterStat.index + 1}">1</td>
+            <td th:text="${item.serviceItem.name}">Dịch vụ phòng</td>
+            <td th:text="${item.serviceItem.price}">500,000 VND</td>
+            <td th:text="${item.quantity}">1</td>
+            <td th:text="${item.totalPrice}">500,000 VND</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="total-price">
+        <p><strong>Tổng giá trị đơn hàng:</strong> <span th:text="${totalPrice}">500,000 VND</span></p>
+    </div>
+
+    <p>Chúng tôi sẽ liên hệ với bạn sớm để xác nhận các chi tiết và tiếp tục xử lý đơn hàng. Nếu có bất kỳ câu hỏi nào, vui lòng liên hệ với chúng tôi qua email hoặc số điện thoại hỗ trợ.</p>
+
+    <p>Trân trọng,<br>Đội ngũ hỗ trợ khách sạn</p>
+    <br>
+    <div class="hotel-info">
+        <p><strong>Khách sạn:</strong> <span th:text="${hotelName}">Tên khách sạn</span></p>
+        <p><strong>Địa chỉ:</strong> <span th:text="${hotelAddress}">Số 1, Phố XYZ, Hà Nội</span></p>
+        <p><strong>Số điện thoại:</strong> <span th:text="${hotelPhoneNumber}">0123456789</span></p>
+        <p><strong>Email:</strong> <span th:text="${hotelEmail}">contact@hotel.com</span></p>
+        <p><strong>Website:</strong> <a th:href="${hotelWebsite}" th:text="${hotelWebsite}">Website</a></p>
+    </div>
+</div>
+</body>
+</html>

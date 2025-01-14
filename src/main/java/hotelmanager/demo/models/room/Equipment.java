@@ -1,7 +1,7 @@
-package hotelmanager.demo.models;
+package hotelmanager.demo.models.room;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import hotelmanager.demo.models.BaseEntity;
 import hotelmanager.demo.models.enums.EquipmentStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,7 +13,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "equipment")
-public class Equipment extends BaseEntity{
+public class Equipment extends BaseEntity {
 
     private String name;
 

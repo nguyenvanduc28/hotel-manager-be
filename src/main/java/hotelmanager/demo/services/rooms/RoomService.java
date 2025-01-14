@@ -3,7 +3,9 @@ package hotelmanager.demo.services.rooms;
 import hotelmanager.demo.dto.bookingDtos.ImageDto;
 import hotelmanager.demo.dto.roomDtos.*;
 import hotelmanager.demo.exceptions.NotFoundException;
-import hotelmanager.demo.models.*;
+import hotelmanager.demo.models.room.Room;
+import hotelmanager.demo.models.room.RoomPrice;
+import hotelmanager.demo.models.room.RoomType;
 import hotelmanager.demo.repositories.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.IllegalFormatCodePointException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class RoomService {

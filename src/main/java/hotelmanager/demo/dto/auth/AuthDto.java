@@ -1,6 +1,5 @@
 package hotelmanager.demo.dto.auth;
 
-import hotelmanager.demo.models.Role;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
